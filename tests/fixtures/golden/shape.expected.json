@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD0002",
+    "severity": "error",
+    "message": "Expected list",
+    "path": "/components",
+    "location": {
+      "file": "golden/shape.json",
+      "line": 1,
+      "column": 16,
+      "excerpt": "{\"components\": {}}"
+    }
+  }
+]

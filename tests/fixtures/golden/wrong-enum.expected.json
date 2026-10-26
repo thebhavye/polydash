@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected one of ['line', 'bar']",
+    "path": "/components/0/kind",
+    "location": {
+      "file": "golden/wrong-enum.json",
+      "line": 16,
+      "column": 15,
+      "excerpt": "      \"kind\": \"pie\","
+    }
+  }
+]

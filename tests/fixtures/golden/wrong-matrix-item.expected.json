@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected number",
+    "path": "/components/0/rows/0/0",
+    "location": {
+      "file": "golden/wrong-matrix-item.json",
+      "line": 18,
+      "column": 11,
+      "excerpt": "          false"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'layout'",
+    "path": "/layout",
+    "location": {
+      "file": "golden/missing-layout.json",
+      "line": 1,
+      "column": 1,
+      "excerpt": "{"
+    }
+  }
+]

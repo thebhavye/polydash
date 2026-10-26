@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'series'",
+    "path": "/components/0/series",
+    "location": {
+      "file": "golden/missing-series.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

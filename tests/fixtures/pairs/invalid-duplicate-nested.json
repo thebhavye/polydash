@@ -1,0 +1,43 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "summary",
+      "type": "group",
+      "layout": {
+        "direction": "row"
+      },
+      "children": [
+        {
+          "id": "sales",
+          "type": "metric",
+          "title": "Sales",
+          "value": 42,
+          "unit": "USD"
+        },
+        {
+          "id": "trend",
+          "type": "chart",
+          "data": {
+            "source": "sales.csv"
+          },
+          "series": [
+            "revenue"
+          ],
+          "kind": "line",
+          "stacked": false
+        }
+      ]
+    },
+    {
+      "id": "sales",
+      "type": "metric",
+      "title": "Sales",
+      "value": 42,
+      "unit": "USD"
+    }
+  ]
+}

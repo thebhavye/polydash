@@ -1,0 +1,23 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "details",
+      "type": "table",
+      "data": {
+        "source": "sales.csv"
+      },
+      "columns": [
+        "revenue"
+      ],
+      "rows": [
+        [
+          false
+        ]
+      ]
+    }
+  ]
+}

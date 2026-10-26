@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected string",
+    "path": "/components/0/unit",
+    "location": {
+      "file": "golden/wrong-string.json",
+      "line": 12,
+      "column": 15,
+      "excerpt": "      \"unit\": 3"
+    }
+  }
+]

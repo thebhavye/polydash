@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD0001",
+    "severity": "error",
+    "message": "Expected a quoted object key",
+    "path": "",
+    "location": {
+      "file": "golden/syntax.json",
+      "line": 1,
+      "column": 20,
+      "excerpt": "{\"title\": \"Broken\",}"
+    }
+  }
+]
