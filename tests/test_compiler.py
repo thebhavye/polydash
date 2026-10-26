@@ -8,7 +8,7 @@ from pathlib import Path
 
 from polydash import check
 from polydash.analyzer import analyze
-from polydash.loaders import load
+from polydash.loaders import Source, load
 from polydash.schema import COMPONENTS
 
 FIXTURES = Path(__file__).parent / 'fixtures'
@@ -169,6 +169,28 @@ class CompilerTests(unittest.TestCase):
         self.assertEqual('Sales\nOverview\n', result.ir.config['title'])
         self.assertEqual(16, result.ir.config['components'][0]['value'])
         self.assertIs(True, result.ir.config['components'][1]['multiple'])
+
+    def test_source_span_index_matches_reference(self):
+        # Every offset, including newlines and EOF, preserves the original contract.
+        for text in ('', 'one', 'a\nb\n', 'a\r\nb\r\n', '✓\ttext\nlast'):
+            source = Source(text, 'test.json')
+            for offset in range(len(text) + 1):
+                with self.subTest(text=text, offset=offset):
+                    span = source.span(offset)
+                    line = text.count('\n', 0, offset) + 1
+                    column = offset - text.rfind('\n', 0, offset)
+                    self.assertEqual((line, column, text.split('\n')[line - 1].rstrip('\r')),
+                                     (span.line, span.column, span.excerpt))
+
+    def test_large_dashboard_preserves_locations(self):
+        config = {'title': 'Large', 'layout': {'direction': 'row'}, 'components': [
+            {'id': str(i), 'type': 'metric', 'value': i} for i in range(2000)]}
+        text = json.dumps(config, indent=2)
+        result = check(text)
+        self.assertEqual([], result.structured())
+        self.assertEqual(2000, len(result.ir.config['components']))
+        span = result.ir.location(('components', 1999, 'value'))
+        self.assertEqual('1999', span.excerpt[span.column - 1:])
 
     def test_cli_io_errors(self):
         result = subprocess.run([sys.executable, '-m', 'polydash', 'missing.json'], capture_output=True, text=True)

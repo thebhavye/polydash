@@ -1,4 +1,5 @@
 """Source-aware front ends. Neither loader knows component property types."""
+from bisect import bisect_right
 import json
 import math
 import re
@@ -12,15 +13,21 @@ class ParseFailure(Exception):
         self.diagnostic = Diagnostic(category, "error", message, pointer(path), span)
 
 
+WHITESPACE = re.compile(r"[ \t\r\n]*")
+
+
 class Source:
     def __init__(self, text, filename):
         self.text, self.filename, self.spans = text, filename, {}
+        self.lines = text.split("\n")
+        self.line_starts = [0]
+        self.line_starts.extend(match.end() for match in re.finditer("\n", text))
 
     def span(self, offset):
-        line = self.text.count("\n", 0, offset) + 1
-        start = self.text.rfind("\n", 0, offset) + 1
-        lines = self.text.split("\n")
-        return Span(self.filename, line, offset - start + 1, lines[line - 1].rstrip("\r"))
+        line_index = bisect_right(self.line_starts, offset) - 1
+        return Span(self.filename, line_index + 1,
+                    offset - self.line_starts[line_index] + 1,
+                    self.lines[line_index].rstrip("\r"))
 
     def fail(self, category, message, path=(), offset=0):
         raise ParseFailure(category, message, path, self.span(offset))
@@ -32,8 +39,7 @@ class JsonLoader(Source):
         decoder = json.JSONDecoder()
 
         def skip():
-            match = re.match(r"[ \t\r\n]*", self.text[self.offset:])
-            self.offset += match.end()
+            self.offset = WHITESPACE.match(self.text, self.offset).end()
 
         def value(path):
             skip()
