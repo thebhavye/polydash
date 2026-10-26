@@ -113,7 +113,7 @@ an input without knowing the proposed module layout:
 | Frontend (`polydash/loaders.py`) | `load(text, filename) -> Dashboard(config, spans)` | `ParseFailure` contains one diagnostic; syntax/structural failures stop analysis |
 | Analysis (`polydash/analyzer.py`) | `analyze(candidate, component_schema=None) -> list[Diagnostic]` | Collect schema/ID errors and title warnings; no format-parser dependency |
 | Gate (`polydash/__init__.py`) | `Result(ir, diagnostics)` | Any error makes ir None; warnings retain the candidate as validated IR |
-| Preview (`polydash/generator.py`) | `generate_html(validated_ir) -> str` | Returns one self-contained HTML string; does not read bindings or write files |
+| Preview (`polydash/generator.py`) | `generate_html(validated_ir) -> str` | Returns one self-contained HTML string; does not fetch bound data or write files |
 | CLI writer | Optional HTML path and diagnostics JSON path | Reject path aliases before writes; writes artifacts and reports I/O failures |
 
 For malformed JSON, the frontend catches the error first; the gate returns no
