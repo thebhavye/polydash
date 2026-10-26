@@ -48,3 +48,18 @@ The suite includes structured diagnostic goldens and deep JSON/YAML rejection wi
 `.github/workflows/tests.yml` installs the package with YAML support in each fresh runner and executes the same commands on Ubuntu, Windows and macOS, with fail-fast disabled. Tests use temporary paths and the active interpreter. No packaging/deployment jobs are added.
 
 Local verification is performed on Windows with Python 3.12 in an isolated venv. Linux/macOS evidence must come from the linked PR workflow runs; do not infer successful runs from workflow configuration alone. Issue #12 stays open until its review, green-main and required-check acceptance criteria are satisfied. Repository branch-protection settings are not changed by this workflow.
+
+## Verified setup and remaining enforcement
+
+The [portability evidence](portability-evidence.md) records the six successful
+main-branch jobs and a fresh Linux venv install/dependency/test run. It also
+lists exact check names and the administrator steps needed for merge enforcement.
+The current collaborator account cannot inspect classic branch protection
+(HTTP 403) or configure it; this is an explicit remaining #12 requirement,
+not a setup step that the test workflow completes automatically.
+
+For just the structured diagnostic corpus, run:
+
+```sh
+python -m unittest tests.test_compiler.CompilerTests.test_goldens -v
+```
