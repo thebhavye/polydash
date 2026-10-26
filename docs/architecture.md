@@ -39,7 +39,7 @@ proposal. #2/#3 review still owns final IR and diagnostic contracts.
 ```text
 UTF-8 configuration
  -> format frontend: lexer/parser -> LocatedConfig
- -> semantic analyzer: structure/schema checks, rules, normalization
+ -> semantic analyzer: schema checks, rules, validation gate
  -> validated DashboardIR (only if no error diagnostics)
  -> generator -> HTML/CSS/JS artifacts
  -> driver writes artifacts
@@ -62,7 +62,7 @@ Pseudotypes describe boundaries; no code or API is implemented.
 ```text
 SourceFile = { sourceId, displayPath, text, format }
 SourceLocation = { sourceId, line, column, excerpt }  // v1 start position
-Diagnostic = { code, severity, message, primarySpan?, relatedLocations[], hint? }
+Diagnostic = { code, severity, message, primaryLocation?, relatedLocations[], hint? }  // target sketch
 StageResult<T> = Success { value: T, diagnostics }
                | Failure { diagnostics } // no value
 Frontend.parse(SourceFile) -> StageResult<LocatedConfig>
@@ -76,7 +76,7 @@ Success cannot contain error diagnostics. Failure contains an error and no value
 
 `LocatedConfig` is a shared **unvalidated** value tree: object, array, string, number, boolean and null. The v1 loader rejects duplicate keys before constructing the object map. Arrays retain order. A side table maps logical paths to start locations; Python columns count Unicode code points. Key-token spans and end offsets are possible later enhancements, not prerequisites for the working validator. Number precision remains a #2/#6 review item.
 
-JSON initially implements the frontend. A future YAML adapter maps its syntax tree into the same LocatedConfig, preserving original YAML spans. #10 must define scalar typing, non-string keys, aliases, tags and multi-document behavior before implementation. YAML shares schema rules, analyzer and generator; it is not a second compiler.
+PR #15 implements JSON and a restricted YAML adapter, both producing the same configuration shape and path-to-location map. YAML scalar typing, keys, aliases, tags and multi-document behavior are documented there and remain subject to #10 review. Both frontends share analyzer rules; no generator exists yet.
 
 ## Component schema and Dashboard IR
 
@@ -95,7 +95,7 @@ object. Original text is retained for excerpts, including CRLF/LF spelling.
 Optional offset ranges and key-token positions are future proposals requiring
 cross-format fixtures; they are not claimed by PR #15.
 
-Syntax errors point to the token or zero-width EOF span. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
+Syntax errors point to the offending start position or EOF position. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
 
 Source-related diagnostics require a location. I/O errors and internal failures may lack one; never fabricate a line for an unread file. One model feeds human and structured output. PR #15 currently orders semantic findings by registered rule then traversal order, with golden tests locking that behavior. #3 owns the final diagnostic format, severities, source mapping and any ordering change. Do not collapse distinct findings sharing a location.
 
@@ -119,7 +119,7 @@ tests/
   golden/      expected diagnostics, IR and generated artifacts
 ```
 
-All modules may depend on core. Frontends depend on core only. Analysis depends on core/schema/IR, never a format parser. Codegen depends on core/IR, never a frontend. Driver composes all stages; no stage imports the driver. Core has no downstream imports. This prevents frontend/analysis cycles and keeps rules reusable across formats.
+All modules may depend on core. Frontends depend on core only. Analysis depends on core/schema/IR, never a format parser. Future codegen depends on core/IR, never a frontend. Driver composes all stages; no stage imports the driver. Core has no downstream imports. This prevents frontend/analysis cycles and keeps rules reusable across formats.
 
 ## Generation, errors and tests
 
@@ -127,7 +127,7 @@ The generator returns relative names and text, such as index.html and CSS. Exact
 
 Proposed policy: stop after unsuccessful syntax parsing; collect independent semantic errors while skipping checks with invalid prerequisites. Never generate partial IR. Internal/I/O failures stop compilation distinctly. ADR 0002 supplies candidate statuses and scenarios, not approved CLI behavior.
 
-No executable tests apply to this documentation-only baseline. Review should trace both valid and malformed input across every boundary. Once code exists:
+No executable tests apply to this documentation-only baseline. PR #15 separately tests its Python validator on three operating systems. Review should trace both valid and malformed input across every boundary. Once code exists:
 
 - Parser fixtures: valid/malformed JSON, duplicate keys, EOF, escapes, CRLF/LF, tabs and non-BMP characters with exact spans.
 - Analyzer fixtures: positive and negative examples for each rule, multiple independent findings and every duplicate-ID occurrence.
