@@ -19,8 +19,9 @@ in PR #19; it does not rewrite Bhavye's proposal.
   `.[yaml]`, checks dependencies, runs tests and compileall. This is PR evidence;
   it is not a green-main run or proof of required branch checks.
 - Review comments on PR #16 request reconciliation of runtime, source units,
-  shape classification, diagnostics and overlapping documentation. Existing
-  README consistency feedback remains applicable.
+  shape classification, diagnostics and overlapping documentation. The earlier
+  README consistency feedback is addressed by c4bd723; detailed diagnostic
+  reconciliation remains under review.
 
 ## Every original issue
 
@@ -30,7 +31,7 @@ in PR #19; it does not rewrite Bhavye's proposal.
 | [#2](https://github.com/thebhavye/polydash/issues/2) IR/schema | PR #15 has schema.py, ir.md, three shared conformance examples; #16 proposes a different located-input/typed-IR boundary | Joint choice on runtime, representation, spans and grammar before approval |
 | [#3](https://github.com/thebhavye/polydash/issues/3) rules/diagnostics | PR #15 has stable IDs, schema walker and exact human/JSON example; #16 proposes a different diagnostic model/order | Agree authoritative rule/source/output contract and record owner/peer review |
 | [#4](https://github.com/thebhavye/polydash/issues/4) pipeline | PR #16 architecture/ADR describes stage results and failure scenarios | Finalize current-versus-target APIs and exit codes; #15 currently groups usage/I/O/dependency as 2, whereas #16 proposes distinct statuses |
-| [#5](https://github.com/thebhavye/polydash/issues/5) conventions | Bhavye's PR #19 adds CONTRIBUTING, authority-indexed docs, issue/PR templates and editor/build ignores; reviewed separately | Teammate confirmation and merge; retain his conventions rather than duplicate them |
+| [#5](https://github.com/thebhavye/polydash/issues/5) conventions | Bhavye's PR #19 adds CONTRIBUTING, authority-indexed docs, issue/PR templates and editor/build ignores; reviewed separately | Teammate onboarding confirmed and PR approved in review 5648696984; merge still pending |
 | [#6](https://github.com/thebhavye/polydash/issues/6) JSON grammar | PR #15 grammar and valid/malformed fixture inventory | Settle updated issue's semantic-shape proposal versus existing parse-level PD0002; reconcile with #2/#3/#4 |
 | [#7](https://github.com/thebhavye/polydash/issues/7) first-wave rules | PR #15 required/kind/property/type fixtures and collect-all golden | Approve shared contracts and merge; no parser/generator rewrite is assumed |
 | [#8](https://github.com/thebhavye/polydash/issues/8) IDs/types | PR #15 reports all two/three/nested collisions and tests every current property type; extension test proves schema-driven behavior | Review contracts, ID policy and coverage; merge |
