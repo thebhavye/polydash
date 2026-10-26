@@ -64,7 +64,7 @@ broken.json:1:1: error PD1003: Missing required field 'title'
 as location/severity/ID/message, the source line, and a caret. The check adapter
 prints human output to stderr and writes JSON when `--diagnostics-json FILE` is
 supplied. Exit codes: 0 success, 1 rejected configuration, 2 I/O/usage/unavailable
-YAML dependency. Invalid files expose no downstream IR. There is no generator.
+YAML dependency. Invalid files expose no downstream IR, and `--output` never invokes the static HTML generator for them.
 
 ## Golden tests
 
@@ -89,8 +89,8 @@ anchor the containing component and blank titles anchor their value. Non-string
 titles receive the existing PD1004 error only. Unknown kinds are not inspected.
 Whitespace checking does not modify the stored title. All findings are collected.
 
-These are authoring-context warnings, not WCAG conformance checks. A future
-generator should render filter titles as visible, programmatically associated
-input labels and chart titles as visible headings associated with their chart.
-The concrete HTML mapping needs generator review; no generator exists yet.
+These are authoring-context warnings, not WCAG conformance checks. The static
+preview renders filter titles as wrapping labels for native selects and chart
+titles as visible headings above honest data placeholders. A future chart
+renderer will need its own title/description and accessibility review.
 Chart titles do not replace useful data summaries, tables or text alternatives.

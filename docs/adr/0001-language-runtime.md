@@ -18,7 +18,7 @@ All can implement this pipeline. No benchmark or team-experience evidence establ
 
 Adopt Python 3.10+ for the initial compiler, matching PR #15's tested foundation. Use standard-library `unittest`, the existing `pyproject.toml` package and the declared optional `PyYAML>=6.0.3,<7` extra for YAML. Keep JSON parsing/source tracking in the existing loader until an evidence-backed change warrants replacing it. Avoid a second runtime, bundler or test framework for the first pipeline. TypeScript/Node remains a viable alternative if the team explicitly funds and reviews a migration; it is not the default proposal while the Python implementation is under review.
 
-This is an **adoption proposal**, not approval of PR #15's schema, IR or every loader behavior. The shared architecture should describe the staged validation behavior that works today and mark any richer source spans or typed nodes as future proposals requiring tests. A generator remains unimplemented.
+This is an **adoption proposal**, not approval of PR #15's schema, IR or every loader behavior. The shared architecture should describe the staged validation behavior that works today and mark any richer source spans or typed nodes as future proposals requiring tests. The static HTML preview is a small first generator; the full generator contract remains proposed.
 
 ## Consequences and acceptance gates
 

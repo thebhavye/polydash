@@ -38,7 +38,7 @@ The scope of collection is one input file. Multi-input aggregation, diagnostic c
 
 ## Proposed status and output matrix
 
-These exit statuses apply to a future compile/check CLI, **not** the existing Python check adapter. The current adapter returns 2 for usage, I/O and missing YAML, and has no generator. Ratification requires an explicit migration decision or an amendment here.
+These exit statuses apply to a future full compile/check CLI, **not** the existing Python CLI. The current CLI returns 2 for usage, I/O and missing YAML; `--output` writes one static HTML preview after validation. Ratification requires an explicit migration decision or an amendment here.
 
 | Input / failure class | Continue? | Human output | Structured output, if requested | Proposed exit |
 | --- | --- | --- | --- | --- |

@@ -78,7 +78,7 @@ Success cannot contain error diagnostics. Failure contains an error and no value
 
 `LocatedConfig` is a shared **unvalidated** value tree: object, array, string, number, boolean and null. The v1 loader rejects duplicate keys before constructing the object map. Arrays retain order. A side table maps logical paths to start locations; Python columns count Unicode code points. Key-token spans and end offsets are possible later enhancements, not prerequisites for the working validator. Number precision remains a #2/#6 review item.
 
-PR #15 implements JSON and a restricted YAML adapter, both producing the same configuration shape and path-to-location map. YAML scalar typing, keys, aliases, tags and multi-document behavior are documented there and remain subject to #10 review. Both frontends share analyzer rules; no generator exists yet.
+PR #15 implements JSON and a restricted YAML adapter, both producing the same configuration shape and path-to-location map. YAML scalar typing, keys, aliases, tags and multi-document behavior are documented there and remain subject to #10 review. Both frontends share analyzer rules. A small static HTML preview now consumes the validated IR; the proposed full generator contract is still open.
 
 ## Component schema and Dashboard IR
 
