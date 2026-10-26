@@ -1,0 +1,15 @@
+{
+  "title": "Sales Snapshot",
+  "theme": "light",
+  "layout": {"direction": "row"},
+  "components": [
+    {"id": "revenue", "type": "metric", "title": "Revenue", "value": 48250, "unit": "USD"},
+    {"id": "orders", "type": "metric", "title": "Orders", "value": 318},
+    {"id": "region", "type": "filter", "title": "Region", "options": ["All", "North", "South"]},
+    {"id": "quarterly", "type": "table", "title": "Quarterly Results",
+     "data": {"source": "illustrative values in this config"},
+     "columns": ["Revenue", "Orders"], "rows": [[10500, 70], [12200, 81], [11150, 75], [14400, 92]]},
+    {"id": "trend", "type": "chart", "title": "Revenue Trend",
+     "data": {"source": "sales.csv"}, "series": ["revenue"], "kind": "line"}
+  ]
+}

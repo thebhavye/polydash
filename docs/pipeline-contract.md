@@ -1,6 +1,6 @@
 # Pipeline integration and failure contract
 
-Status: **Proposed for Issue #4 review**. Based on the merged [architecture baseline](architecture.md) and [ADR 0002](adr/0002-error-handling.md). This document specifies target interfaces and observable behavior; no compile driver or generator exists yet. The merged Python check adapter from [PR #15](https://github.com/thebhavye/polydash/pull/15) has a different current contract, listed below. Team review must choose the final behavior before implementation claims conformance.
+Status: **Proposed long-term contract for Issue #4 review**. Based on the merged [architecture baseline](architecture.md) and [ADR 0002](adr/0002-error-handling.md). The current CLI can produce one static HTML preview through `--output`; it does not implement this proposed multi-artifact driver/writer contract. The merged Python check adapter from [PR #15](https://github.com/thebhavye/polydash/pull/15) has a different current status contract, listed below. Team review must choose the final behavior before implementation claims conformance.
 
 ## One-input data flow
 

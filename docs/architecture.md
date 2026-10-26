@@ -1,6 +1,6 @@
 # PolyDash architecture baseline
 
-Status: **Proposed**, pending team agreement for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an approved API. The validation adapter described below has since merged; the generator remains unimplemented.
+Status: **Proposed**, pending team agreement for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an approved API. The validation adapter has merged; a small static HTML preview now exists, while the full generator contract remains unimplemented.
 
 ## Repository baseline
 
