@@ -1,8 +1,8 @@
 # Issue review and remaining acceptance criteria
 
-Reviewed 2026-10-26: issues #1–#14, PR #15 at `19f3b81` and PR #16 at `68abacc`.
-Neither open PR is a merged resolution. This follow-up supplies contribution
-conventions and the #13 research spike; it does not rewrite Bhavye's proposal.
+Reviewed 2026-10-26: issues #1–#14, PR #15 at `19f3b81` and PR #16 at `c4bd723` and contribution PR #19 at `b734516`.
+Neither open PR is a merged resolution. This follow-up supplies the #13 research spike and links the conventions
+in PR #19; it does not rewrite Bhavye's proposal.
 
 ## Evidence
 
@@ -19,8 +19,9 @@ conventions and the #13 research spike; it does not rewrite Bhavye's proposal.
   `.[yaml]`, checks dependencies, runs tests and compileall. This is PR evidence;
   it is not a green-main run or proof of required branch checks.
 - Review comments on PR #16 request reconciliation of runtime, source units,
-  shape classification, diagnostics and overlapping documentation. Existing
-  README consistency feedback remains applicable.
+  shape classification, diagnostics and overlapping documentation. The earlier
+  README consistency feedback is addressed by c4bd723; detailed diagnostic
+  reconciliation remains under review.
 
 ## Every original issue
 
@@ -30,7 +31,7 @@ conventions and the #13 research spike; it does not rewrite Bhavye's proposal.
 | [#2](https://github.com/thebhavye/polydash/issues/2) IR/schema | PR #15 has schema.py, ir.md, three shared conformance examples; #16 proposes a different located-input/typed-IR boundary | Joint choice on runtime, representation, spans and grammar before approval |
 | [#3](https://github.com/thebhavye/polydash/issues/3) rules/diagnostics | PR #15 has stable IDs, schema walker and exact human/JSON example; #16 proposes a different diagnostic model/order | Agree authoritative rule/source/output contract and record owner/peer review |
 | [#4](https://github.com/thebhavye/polydash/issues/4) pipeline | PR #16 architecture/ADR describes stage results and failure scenarios | Finalize current-versus-target APIs and exit codes; #15 currently groups usage/I/O/dependency as 2, whereas #16 proposes distinct statuses |
-| [#5](https://github.com/thebhavye/polydash/issues/5) conventions | This follow-up adds CONTRIBUTING, authority-indexed docs, two issue templates and editor/build ignores | Other teammate confirms self-serve onboarding in review; merge |
+| [#5](https://github.com/thebhavye/polydash/issues/5) conventions | Bhavye's PR #19 adds CONTRIBUTING, authority-indexed docs, issue/PR templates and editor/build ignores; reviewed separately | Teammate onboarding confirmed and PR approved in review 5648696984; merge still pending |
 | [#6](https://github.com/thebhavye/polydash/issues/6) JSON grammar | PR #15 grammar and valid/malformed fixture inventory | Settle updated issue's semantic-shape proposal versus existing parse-level PD0002; reconcile with #2/#3/#4 |
 | [#7](https://github.com/thebhavye/polydash/issues/7) first-wave rules | PR #15 required/kind/property/type fixtures and collect-all golden | Approve shared contracts and merge; no parser/generator rewrite is assumed |
 | [#8](https://github.com/thebhavye/polydash/issues/8) IDs/types | PR #15 reports all two/three/nested collisions and tests every current property type; extension test proves schema-driven behavior | Review contracts, ID policy and coverage; merge |
@@ -44,8 +45,9 @@ conventions and the #13 research spike; it does not rewrite Bhavye's proposal.
 The new [#17](https://github.com/thebhavye/polydash/issues/17) and
 [#18](https://github.com/thebhavye/polydash/issues/18) are the two proposal issues
 requested by the #13 spike. They have fixture pairs and estimates, and await
-maintainer accept/reject decisions. They are not implemented rules or automatic
-extensions of the original fourteen issues.
+maintainer accept/reject decisions. At this review snapshot they were not implemented rules or automatic extensions
+of the original fourteen issues. Subsequent PR #21 implements the two title
+warnings in a separate reviewed change; the broader responsive proposal remains deferred.
 
 ## Joint decisions to make once
 

@@ -52,7 +52,8 @@ See [diagnostics](validation-rules.md) for the exact output contract.
 
 ## Fixture inventory
 
-Valid fixtures in `tests/fixtures/golden/` (each expects no diagnostics):
+Valid fixtures in `tests/fixtures/golden/` (accepted with no errors; chart/filter
+fixtures may emit documented title authoring warnings):
 `valid-minimal`, `valid-metric`, `valid-chart`, `valid-table`, `valid-filter`,
 `valid-nested`, `valid-all-properties`, `valid-unique-case-space`.
 These exercise empty dashboards, scalar properties, bindings, lists, matrices,

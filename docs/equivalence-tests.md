@@ -11,7 +11,9 @@ message, diagnostic count and order are all compared.
 
 The runner compares parser IR even for semantically invalid pairs, verifies
 matching diagnostics, and checks matching acceptance/rejection. Valid pairs
-must have zero diagnostics. `unittest.assertEqual` uses unlimited readable
+must have zero error diagnostics. Authoring warnings are allowed but must match
+in rule ID, severity, message, logical path and order across formats. The minimal
+and metric fixtures still demonstrate completely empty diagnostic output. `unittest.assertEqual` uses unlimited readable
 nested diffs (`maxDiff = None`) so a failure shows the actual divergent values.
 Exact physical positions are independently covered by golden and parse tests.
 

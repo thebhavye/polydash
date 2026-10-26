@@ -3,11 +3,20 @@ __pycache__/
 *.egg-info/
 .venv/
 build/
+
+# Python packaging and environments
+dist/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local editor and OS files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-dist/
-.pytest_cache/
-.coverage
-htmlcov/
+
+# Local credentials (keep example files reviewable)
+.env
+.env.local
