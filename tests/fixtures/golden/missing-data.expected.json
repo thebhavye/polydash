@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'data'",
+    "path": "/components/0/data",
+    "location": {
+      "file": "golden/missing-data.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/missing-data.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

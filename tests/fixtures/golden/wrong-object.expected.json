@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected object",
+    "path": "/components/0/data",
+    "location": {
+      "file": "golden/wrong-object.json",
+      "line": 10,
+      "column": 15,
+      "excerpt": "      \"data\": \"sales.csv\","
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-object.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

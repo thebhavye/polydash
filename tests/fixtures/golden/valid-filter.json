@@ -1,0 +1,17 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "region",
+      "type": "filter",
+      "options": [
+        "North",
+        "South"
+      ],
+      "multiple": true
+    }
+  ]
+}

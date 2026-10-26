@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1001",
+    "severity": "error",
+    "message": "Unknown component type 'mystery'",
+    "path": "/components/0/type",
+    "location": {
+      "file": "golden/unknown-type.json",
+      "line": 9,
+      "column": 15,
+      "excerpt": "      \"type\": \"mystery\""
+    }
+  }
+]

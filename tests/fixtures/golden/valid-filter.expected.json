@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD2001",
+    "severity": "warning",
+    "message": "Filter title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/valid-filter.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'type'",
+    "path": "/components/0/type",
+    "location": {
+      "file": "golden/missing-type.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

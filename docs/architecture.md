@@ -1,10 +1,10 @@
 # PolyDash architecture baseline
 
-Status: **Proposed**, pending teammate review for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an implementation or an approved API.
+Status: **Proposed**, pending team agreement for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an approved API. The validation adapter described below has since merged; the generator remains unimplemented.
 
 ## Repository baseline
 
-Reviewed 2026-10-26: main at `fce742a` contains only README.md. The checkout also contained an unfinished, untracked architecture draft; this document completes and corrects it. No compiler, runtime manifest, dependency lockfile, tests, CI, contribution guide or PR template exists. Config2UI code is not available here. No language decision is approved. The README defines intended scope.
+Historical starting point, reviewed 2026-10-26: main at `fce742a` contained only README.md. The architecture and Python validation adapter have since merged. A code generator does not yet exist. Config2UI code is not available here. The README defines intended scope.
 
 Companion proposals:
 
@@ -16,12 +16,11 @@ Companion proposals:
 - [Backlog audit](backlog-audit.md)
 - [Separate differentiation survey](research/dashboard-generator-survey.md)
 
-## Relationship to the parallel implementation PR
+## Relationship to the merged validation adapter
 
-[PR #15](https://github.com/thebhavye/polydash/pull/15) is an unmerged Python
-validation implementation; it is not part of this branch's repository baseline.
-Its existence does not accept or supersede this proposed design. Before both
-are merged, review these differences explicitly:
+[PR #15](https://github.com/thebhavye/polydash/pull/15) merged the Python
+validation adapter. Its implemented behavior informs this proposed design;
+the remaining public contracts still require review:
 
 | Baseline proposal | PR #15 implementation | Agreement needed |
 | --- | --- | --- |
@@ -31,16 +30,15 @@ are merged, review these differences explicitly:
 | Structural shape failures in loader for v1 | Loader reports shape failures as PD0002 | Record as adopted v1 boundary; future reclassification requires coordinated spec/test change. |
 | Current check CLI 0/1/2; future compiler statuses open | CLI uses 2 for usage/I/O/missing YAML | #4 should preserve this adapter or explicitly plan a versioned CLI change. |
 
-ADR 0001 now proposes adopting Python. PR #15 tests demonstrate the current
-validator behavior, while this branch remains a documentation-only architecture
-proposal. #2/#3 review still owns final IR and diagnostic contracts.
+ADR 0001 proposes adopting the now-merged Python implementation. #2/#3 review
+still owns final IR and diagnostic contracts.
 
 ## Pipeline and responsibilities
 
 ```text
 UTF-8 configuration
  -> format frontend: lexer/parser -> LocatedConfig
- -> semantic analyzer: structure/schema checks, rules, normalization
+ -> semantic analyzer: schema checks, rules, validation gate
  -> validated DashboardIR (only if no error diagnostics)
  -> generator -> HTML/CSS/JS artifacts
  -> driver writes artifacts
@@ -66,7 +64,7 @@ Pseudotypes describe boundaries; no code or API is implemented.
 ```text
 SourceFile = { sourceId, displayPath, text, format }
 SourceLocation = { sourceId, line, column, excerpt }  // v1 start position
-Diagnostic = { code, severity, message, primarySpan?, relatedLocations[], hint? }
+Diagnostic = { code, severity, message, primaryLocation?, relatedLocations[], hint? }  // target sketch
 StageResult<T> = Success { value: T, diagnostics }
                | Failure { diagnostics } // no value
 Frontend.parse(SourceFile) -> StageResult<LocatedConfig>
@@ -80,7 +78,7 @@ Success cannot contain error diagnostics. Failure contains an error and no value
 
 `LocatedConfig` is a shared **unvalidated** value tree: object, array, string, number, boolean and null. The v1 loader rejects duplicate keys before constructing the object map. Arrays retain order. A side table maps logical paths to start locations; Python columns count Unicode code points. Key-token spans and end offsets are possible later enhancements, not prerequisites for the working validator. Number precision remains a #2/#6 review item.
 
-JSON initially implements the frontend. A future YAML adapter maps its syntax tree into the same LocatedConfig, preserving original YAML spans. #10 must define scalar typing, non-string keys, aliases, tags and multi-document behavior before implementation. YAML shares schema rules, analyzer and generator; it is not a second compiler.
+PR #15 implements JSON and a restricted YAML adapter, both producing the same configuration shape and path-to-location map. YAML scalar typing, keys, aliases, tags and multi-document behavior are documented there and remain subject to #10 review. Both frontends share analyzer rules; no generator exists yet.
 
 ## Component schema and Dashboard IR
 
@@ -99,7 +97,7 @@ object. Original text is retained for excerpts, including CRLF/LF spelling.
 Optional offset ranges and key-token positions are future proposals requiring
 cross-format fixtures; they are not claimed by PR #15.
 
-Syntax errors point to the token or zero-width EOF span. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
+Syntax errors point to the offending start position or EOF position. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
 
 Source-related diagnostics require a location. I/O errors and internal failures may lack one; never fabricate a line for an unread file. One model feeds human and structured output. PR #15 currently orders semantic findings by registered rule then traversal order, with golden tests locking that behavior. #3 owns the final diagnostic format, severities, source mapping and any ordering change. Do not collapse distinct findings sharing a location.
 
@@ -123,7 +121,7 @@ tests/
   golden/      expected diagnostics, IR and generated artifacts
 ```
 
-All modules may depend on core. Frontends depend on core only. Analysis depends on core/schema/IR, never a format parser. Codegen depends on core/IR, never a frontend. Driver composes all stages; no stage imports the driver. Core has no downstream imports. This prevents frontend/analysis cycles and keeps rules reusable across formats.
+All modules may depend on core. Frontends depend on core only. Analysis depends on core/schema/IR, never a format parser. Future codegen depends on core/IR, never a frontend. Driver composes all stages; no stage imports the driver. Core has no downstream imports. This prevents frontend/analysis cycles and keeps rules reusable across formats.
 
 ## Generation, errors and tests
 
@@ -131,7 +129,7 @@ The generator returns relative names and text, such as index.html and CSS. Exact
 
 Proposed policy: stop after unsuccessful syntax parsing; collect independent semantic errors while skipping checks with invalid prerequisites. Never generate partial IR. Internal/I/O failures stop compilation distinctly. ADR 0002 supplies candidate statuses and scenarios, not approved CLI behavior.
 
-No executable tests apply to this documentation-only baseline. Review should trace both valid and malformed input across every boundary. Once code exists:
+No executable tests apply to this documentation-only baseline. PR #15 separately tests its Python validator on three operating systems. Review should trace both valid and malformed input across every boundary. Once code exists:
 
 - Parser fixtures: valid/malformed JSON, duplicate keys, EOF, escapes, CRLF/LF, tabs and non-BMP characters with exact spans.
 - Analyzer fixtures: positive and negative examples for each rule, multiple independent findings and every duplicate-ID occurrence.

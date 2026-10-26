@@ -1,236 +1,131 @@
-# PolyDash — Multi-Format Configuration-to-HTML Dashboard Compiler
+# PolyDash — Multi-Format Dashboard Compiler
 
-PolyDash is a compiler project that accepts a configuration file describing a
-dashboard and compiles it into a working web dashboard: generated **HTML**, **CSS**,
-and **JavaScript** where required.
+PolyDash validates dashboard configurations before code generation, with errors
+that point back to the source file. It builds on the Config2UI lab project idea;
+the earlier prototype is not included in this repository.
 
-It extends the concept of our existing Compiler Design Lab project, originally
-called **Config2UI**. The earlier Config2UI lab prototype is not present in this
-repository — **PolyDash starts fresh in this repository**, reusing the original
-idea and evolving it toward multiple configuration formats, stronger static
-analysis, useful compiler diagnostics, and cross-platform execution.
+## Current status
 
-> **Repository status: bootstrap / pre-implementation.** No compiler code exists
-> yet. Everything below describes the *intended* project. Implemented vs. planned
-> features are called out explicitly in
-> [Current implementation status](#current-implementation-status-and-limitations).
+Implemented in this increment (issues #6–#11):
 
----
+- JSON parsing with source positions and a documented grammar.
+- Shared Dashboard IR and a small, data-driven component schema.
+- Required-field, unknown-component/property, property-type and duplicate-ID
+  validation, collecting all recoverable errors.
+- Human and structured JSON diagnostics, a golden regression corpus and
+  JSON/YAML equivalence tests.
+- Optional YAML/YML front end: install the declared `yaml` extra (PyYAML).
+  See [YAML support](docs/yaml-support.md) for the subset and installation.
 
-## 1. Overview
-
-PolyDash treats a dashboard definition the way a compiler treats a program:
-
-```
-Configuration Input → Lexer / Parser → Semantic Analyzer → Dashboard IR → Code Generator → HTML / CSS / JS
-```
-
-Instead of loading a JSON/YAML file at runtime and hoping it is correct, PolyDash
-**compiles** it: parses the configuration, analyzes it statically, produces a
-Dashboard Intermediate Representation (IR), and emits production dashboard code.
-
-## 2. Problem statement
-
-Manually building a dashboard requires writing frontend code — markup, styling,
-layout rules, wiring data to charts and widgets — even when the dashboard itself
-is a fairly regular, describable artifact. Configuration-driven generation can
-simplify this: a person describes *what* the dashboard contains and *how* it is
-arranged, and the compiler produces the frontend code.
-
-The hard part is that hand-written configuration files are error-prone: missing
-required fields, unknown component types, duplicate IDs, wrong value types, and
-structurally inconsistent layouts. Without validation, these problems can surface in the browser, far from the
-mistake's source. PolyDash's intended focus is a
-**compiler-focused static-analysis engine** that
-validates dashboard definitions and reports problems **before code generation**,
-with diagnostics tied back to the source configuration. Declarative generation,
-schema validation, and source-aware validation have existing precedents; this is
-a design goal, not a demonstrated novelty claim. See the
-[comparison survey](docs/research/dashboard-generator-survey.md).
-
-## 3. Goals and intended users
-
-**Goals**
-
-- Compile dashboard configuration files into deployable HTML/CSS/JS output.
-- Support multiple configuration front-ends (starting with JSON, then YAML) that
-  produce a shared located configuration for analysis into the same Dashboard IR.
-- Validate dashboard definitions statically and emit precise, source-aware
-  diagnostics instead of vague runtime errors.
-- Run identically on Windows, Linux, and macOS.
-
-**Intended users**
-
-- Students and educators in compiler-design coursework (the project's origin).
-- Developers who want a dashboard without hand-writing frontend code.
-- Teams that want to validate and version-control dashboard definitions as data.
-
-## 4. Input formats
-
-| Format | Status | Notes |
-|---|---|---|
-| **JSON** | *Planned — first target* | Initial configuration format for the first pipeline. |
-| **YAML** | *Planned — next* | Reuses the same IR and code generator; depends on an agreed component schema and IR (see roadmap). |
-| **TOML** | *Possible future extension* | Under consideration; not committed. |
-| **Markdown-based DSL** | *Possible future extension* | A defined Markdown syntax is being considered as a lightweight authoring format; not committed. |
-
-All front-ends produce a shared unvalidated `LocatedConfig`. The format-independent
-analyzer validates it and constructs Dashboard IR only on success; code generation
-consumes that validated IR.
-
-## 5. Output
-
-Generated, static dashboard artifacts:
-
-- **HTML** — dashboard structure and layout.
-- **CSS** — styling and arrangement.
-- **JavaScript** — emitted only where required (for example, interactive
-  components that need runtime behavior).
-
+HTML/CSS/JS code generation, live data access and a full compile CLI are
+still planned. The CI workflow targets Windows, Linux and macOS. The check
+adapter below validates input only. The new schema/IR
+and diagnostic contracts are initial baselines for architecture-owner review;
+the prerequisite architecture issues #2/#3 have not been marked approved.
 The [proposed architecture baseline](docs/architecture.md),
-[decision records](docs/adr/0001-language-runtime.md), and
-[shared JSON/IR contract](docs/contracts/ir-json-shared-contract.md) describe
-stage boundaries and open decisions. They are documentation proposals, not
-implemented features or team-approved specifications. The
-[backlog audit](docs/backlog-audit.md) records dependency and scope gaps.
+[decision records](docs/adr/0001-language-runtime.md),
+[shared JSON/IR contract](docs/contracts/ir-json-shared-contract.md) and
+[backlog audit](docs/backlog-audit.md) document open decisions. A
+[comparison survey](docs/research/dashboard-generator-survey.md) records
+prior art; source-aware validation is a project goal, not a novelty claim.
 
-## 6. Compiler pipeline and the role of each stage
+## Local setup and checks
 
-| Stage | Role | Status |
-|---|---|---|
-| **Lexer / Parser** | Reads the configuration format, verifies syntax, and records source locations for every construct. | *Planned* |
-| **Semantic Analyzer** | Validates components, required fields, types, IDs, and properties against the component schema; produces diagnostics. | *Planned* |
-| **Dashboard IR** | Format-independent, validated, normalized representation of the dashboard (structure, layout, components, data bindings). | *Planned — design in progress* |
-| **Code Generator** | Lowers the IR into HTML, CSS, and (where required) JavaScript. | *Planned* |
+Python 3.10+ is required. Run commands from the repository root; JSON checking
+needs no third-party libraries and no install step:
 
-Key design property: **analysis runs before generation**. Invalid configurations
-never reach the code generator.
-
-## 7. Planned Dashboard IR
-
-The Dashboard IR is the pivot of the whole compiler. Each frontend returns
-unvalidated `LocatedConfig` with source locations. The analyzer checks structure
-and meaning, then constructs validated Dashboard IR only if no errors remain.
-The generator consumes that IR without rereading source text. Missing-field and
-unknown-type checks therefore run before valid IR exists.
-
-Planned shape (to be finalized in the IR/component-schema design issue):
-
-- **`Dashboard`** — root node: title, global layout, theme, metadata (source format and version).
-- **`Layout`** — arrangement nodes (e.g., grid rows/columns or regions) that hold components.
-- **`Component`** — a typed widget node (e.g., metric card, chart, table, filter) with declared properties and a unique ID.
-- **`DataBinding`** — where a component's data comes from, normalized away from format-specific syntax.
-- **Source spans** — every IR node keeps a reference to its originating location in the source configuration, so diagnostics survive lowering.
-
-Open decisions to be settled before implementation: exact node kinds, property
-typing, how data sources are represented, and whether the IR is serialized
-(JSON IR files, for testability) or kept in memory. These are tracked as
-compiler-core issues in the tracker.
-
-## 8. Planned static-analysis capabilities
-
-The static-analysis engine validates dashboard definitions before code
-generation and reports problems with source context.
-
-**Initial checks (planned)**
-
-1. **Missing required fields** — e.g., a component with no ID, a chart with no data source or series definition.
-2. **Invalid component types** — component kinds and properties not present in the component schema.
-3. **Type mismatches** — property values whose type does not match the schema (e.g., a number where a list of column names is required).
-4. **Duplicate component IDs** — IDs referenced or defined more than once, so cross-references and generated code stay unambiguous.
-5. **Source-aware diagnostics** — every report carries the source file and location of the offending construct, not a generic error.
-
-**Future checks (research, not committed)**
-
-6. **Accessibility checks** — e.g., missing titles/labels, insufficient contrast, missing alternatives for visually rendered components.
-7. **Responsive-layout checks** — e.g., layouts that cannot render at narrow widths, unbalanced grids.
-
-The accessibility and responsive checks are an *investigation* first; whether
-they ship depends on the outcome of the research issue.
-
-## 9. Proposed CLI workflow *(not implemented)*
-
-The following is a **proposed** command-line interface. **None of these commands
-exist yet** — the CLI shape, tooling, and language runtime are still undetermined.
-
-```
-polydash compile dashboard.json --out dist/        # proposed, not implemented
-polydash check dashboard.yaml                      # analyze only, no generation (proposed)
-polydash dashboard.json -o dist/                   # flexible input parsing (proposed)
+```sh
+python -m polydash tests/fixtures/pairs/valid-minimal.json
+python -m polydash tests/fixtures/golden/multiple.json --diagnostics-json diagnostics.json
 ```
 
-Behavior goals (proposed): error diagnostics cause a nonzero exit; warnings and
-info alone allow success with exit 0. Validate-only mode performs no generation.
-Successful compilation writes generated assets to an output directory. Exact
-options and failure statuses remain proposed in ADR 0002 and Issue #4.
+Human diagnostics go to stderr; the option also writes a JSON artifact.
+Exit status is 0 for success, 1 for invalid input, and 2 for usage/I/O errors or
+an unavailable YAML library. Invalid input never exposes downstream IR.
 
-## 10. Cross-platform goal
+Install the optional YAML dependency before running the full suite:
 
-PolyDash is intended to build, run, and produce identical output on **Windows**,
-**Linux**, and **macOS**. This includes a reproducible development setup,
-platform-independent path handling, and CI that runs on all three operating
-systems. No platform decisions have been made yet; the tooling/runtime choice
-will be part of the foundation work.
+```sh
+python -m pip install ".[yaml]"
+python -m unittest discover -v
+```
 
-## 11. Development roadmap
+Tests cover 36 golden configurations, 29 malformed-input fixtures, seven
+JSON/YAML pairs, source locations, schema extensibility and CLI behavior. No
+external services are required by these tests. A GitHub Actions matrix runs the
+suite on Windows/Linux/macOS with Python 3.10 and 3.12 (issue #12). See
+[clean development setup](docs/dev-setup.md).
 
-| Phase | Milestone | Focus |
-|---|---|---|
-| **Phase 1** | Project Foundation | Architecture baseline and documentation, evidence-based differentiation research, repo conventions. |
-| **Phase 2** | Compiler Core | Component schema + Dashboard IR definition, JSON configuration grammar, stage-integration and error-handling contract. |
-| **Phase 3** | Static Analysis | Rule interface + diagnostic format, semantic validation (required fields, types, IDs), structured diagnostics with negative tests. |
-| **Phase 4** | Multi-Format Support | YAML front-end on the shared IR, JSON/YAML equivalence tests. |
-| **Phase 5** | Portability and Release | Cross-platform CI (Windows/Linux/macOS), reproducible setup, first packaged release. |
+Regenerate goldens only for intentional diagnostic changes:
 
-Trackers for accessibility and responsive-layout analysis live in the Static
-Analysis phase as an investigative issue, not a committed deliverable.
+```sh
+python -m tests.update_goldens
+git diff -- tests/fixtures/golden
+python -m unittest discover -v
+```
 
-## 12. Team
+Review every changed expected diagnostic before committing.
 
-| Member | Role focus | GitHub |
-|---|---|---|
-| **Bhavye Kathuria** | Architecture and integration | [@thebhavye](https://github.com/thebhavye) |
-| **Ayush Kumar Verma** | Implementation and validation | *(account pending verification — will be added once confirmed)* |
+## Configuration example
 
-## 13. Contribution workflow and testing expectations
+```json
+{
+  "title": "Sales",
+  "layout": {"direction": "column"},
+  "components": [
+    {"id": "revenue", "type": "metric", "value": 42, "unit": "USD"},
+    {
+      "id": "trend",
+      "type": "chart",
+      "data": {"source": "sales.csv"},
+      "series": ["revenue"],
+      "kind": "line",
+      "stacked": false
+    }
+  ]
+}
+```
 
-- Work happens on feature branches merged into `main` through pull requests —
-  no direct pushes to `main`.
-- Every PR describes what changed, which issue it closes, and how it was tested.
-- **Testing expectations:** compiler stages must ship with tests — parser tests
-  against representative configurations, semantic-analysis tests including
-  *negative* cases (invalid configs that must be rejected), and IR/code-generator
-  tests. Cross-format behavior requires equivalence tests (same-meaning
-  JSON/YAML → equivalent IR) once multiple front-ends exist.
-- CI runs the test suite on Windows, Linux, and macOS once the CI foundation
-  issue lands.
-- Labels organize the backlog (`architecture`, `compiler`, `parser`,
-  `validation`, `code-generation`, `testing`, `documentation`,
-  `cross-platform`, `enhancement`, `good first issue`), and milestones track
-  the five roadmap phases above.
+Supported component types: metric, chart, table, filter and nested group.
+Data sources are opaque strings; they are not fetched or executed.
+JSON and YAML produce the same configuration shape and source-location map.
+The shared analyzer validates that candidate before it is exposed as IR.
 
-## 14. Current implementation status and limitations
+The [accessibility/responsive research spike](docs/research/a11y-responsive-spike.md)
+proposes bounded authoring checks and records what requires generated output or
+browser testing. PD2001/PD2002 now implement the bounded title warnings; broader accessibility
+and responsive checks remain proposals. The
+[issue review](docs/issue-review.md) records evidence and remaining criteria for
+all fourteen original issues.
 
-**Status: bootstrap.** This repository currently contains only project
-documentation and a GitHub issue backlog.
+## Contracts and tests
 
-**Implemented:** none — no lexer/parser, semantic analyzer, IR, code generator,
-CLI, input format support, or tests exist yet.
+- [Shared IR and component schema](docs/ir.md)
+- [JSON grammar, parse/semantic boundary and fixture inventory](docs/json-grammar.md)
+- [Validation rules, diagnostics and golden regeneration](docs/validation-rules.md)
+- [YAML subset and optional dependency](docs/yaml-support.md)
+- [Cross-format equivalence and adding paired fixtures](docs/equivalence-tests.md)
 
-**In progress:**
-- Architecture baseline and documentation (tracked issues).
-- Evidence-based research into existing dashboard generators, to keep off our
-  differentiation claims honest.
+The v1 scope excludes expressions, variables, custom components, includes,
+YAML aliases/anchors and multi-document streams. TOML and a Markdown DSL remain
+possible future front ends. Missing/blank filter and chart titles produce accessibility authoring warnings
+(PD2001/PD2002); warnings preserve IR and exit status 0. They do not establish
+WCAG conformance. Responsive-layout checks remain research topics.
 
-**Planned (not started):**
-- JSON configuration parsing → Dashboard IR → HTML/CSS/JS code generation.
-- Static analysis: missing-field, component-type, property-type, duplicate-ID,
-  and source-aware diagnostics.
-- YAML front-end; possible TOML and Markdown-syntax front-ends.
-- Cross-platform CI and a first release.
+## Contributing
 
-**Known limitations of the vision:** the [research draft](docs/research/dashboard-generator-survey.md)
-finds prior art for declarative generation, schema validation, and source-aware
-pre-render validation. PolyDash has no demonstrated novelty or diagnostic-quality
-advantage yet. Issue #14 still requires teammate review. The CLI shown above is
-aspirational only.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch/PR workflow, required tests
+and teammate review. The [documentation index](docs/README.md) distinguishes
+implementation contracts from pending architecture proposals.
+
+Use feature branches and pull requests; do not push directly to main. Describe
+the behavior, linked issues and validation in each PR. Architecture contracts and
+new dependencies require owner review before merge. Compiler changes need
+positive/negative fixtures; cross-format changes need paired fixtures. The goal
+is consistent behavior on Windows, Linux and macOS; the test matrix verifies
+these platforms on each PR and push.
+
+| Member | Focus |
+| --- | --- |
+| [Bhavye Kathuria](https://github.com/thebhavye) | Architecture and integration |
+| Ayush Kumar Verma | Implementation and validation; GitHub account pending verification |

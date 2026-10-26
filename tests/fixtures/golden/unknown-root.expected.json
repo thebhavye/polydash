@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1002",
+    "severity": "error",
+    "message": "Unknown property 'colour'",
+    "path": "/colour",
+    "location": {
+      "file": "golden/unknown-root.json",
+      "line": 7,
+      "column": 13,
+      "excerpt": "  \"colour\": \"red\""
+    }
+  }
+]

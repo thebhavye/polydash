@@ -1,6 +1,6 @@
 # Pipeline integration and failure contract
 
-Status: **Proposed for Issue #4 review**. Based on the unmerged [architecture baseline](architecture.md) in PR #16 and [ADR 0002](adr/0002-error-handling.md). This document specifies target interfaces and observable behavior; no driver or generator exists on this branch. The Python check adapter in [PR #15](https://github.com/thebhavye/polydash/pull/15) has a different current contract, listed below. Team review must choose the final behavior before implementation claims conformance.
+Status: **Proposed for Issue #4 review**. Based on the merged [architecture baseline](architecture.md) and [ADR 0002](adr/0002-error-handling.md). This document specifies target interfaces and observable behavior; no compile driver or generator exists yet. The merged Python check adapter from [PR #15](https://github.com/thebhavye/polydash/pull/15) has a different current contract, listed below. Team review must choose the final behavior before implementation claims conformance.
 
 ## One-input data flow
 
@@ -30,7 +30,7 @@ Neither stage result uses `null` to ambiguously mean success. A failure has no u
 
 1. Parse command options, read the input, decode UTF-8 and select a frontend. Usage errors or unsupported options stop before reading. Input read/decode failures stop before parsing.
 2. The frontend parses one input. On syntax failure, emit the parse diagnostic(s) and stop this input. No partial `LocatedConfig` is passed onward. A parser may recover enough to report more than one syntax error, but must not analyze or generate after failure. Exact recovery bounds are a parser decision.
-3. The analyzer collects independent recoverable semantic errors in one pass. A failed prerequisite suppresses dependent checks on that subtree; independent siblings continue. For example, a non-object component gets one shape finding rather than invented missing `id` and `type` findings, while later valid objects remain checked. If any error is found, return failure with all applicable findings, not a partial IR. Warnings/info alone return successful IR.
+3. The analyzer collects independent recoverable semantic errors in one pass. A failed prerequisite suppresses dependent checks on that subtree; independent siblings continue. For example, a component with an unknown `type` gets one unknown-type finding rather than invented type-specific property findings, while later valid components remain checked. The frontend rejects non-object component shapes before this stage. If any error is found, return failure with all applicable findings, not a partial IR. Warnings/info alone return successful IR.
 4. Validate-only mode renders findings and stops before generation/writes. Compile mode invokes the generator only on successful IR. A generator `Failure` from a valid IR is a compilation failure with proposed exit 4 and no writer call. Unexpected stage exceptions are internal failures handled at the driver boundary, also exit 4, with a concise message rather than a user-input rule code.
 5. The driver validates each generated relative path stays inside the requested output directory and is unique before writing. It stages artifacts in that directory and publishes only after generation succeeds. Cross-file publication cannot be assumed atomic: if an output write/rename fails, report failure, clean temporary files best effort and tell the user that partial new output may exist. Do not announce successful compilation. Exact overwrite/backup policy needs CLI review; the writer must not silently present a partial build as success.
 
@@ -72,7 +72,7 @@ These are **contract tests to write when a driver exists**. Exact `id` requiredn
 
 ## Open review decisions and relationship to PR #15
 
-- **Runtime and source positions:** PR #16 proposes TypeScript/Node UTF-16 offsets, while PR #15 implements Python code-point line/column plus excerpts. Resolve ADR 0001 and provenance before treating these pseudotypes as public APIs.
+- **Runtime and source positions:** The merged baseline proposes adopting Python 3.10+ and the current loader's code-point line/column plus excerpts. Agree on the public location and provenance contract before treating these pseudotypes as stable APIs.
 - **Shape error ownership:** the v1 adoption proposal follows PR #15: valid JSON with wrong structural shapes is rejected by the loader as PD0002. #2/#6/#3 review must confirm the boundary before treating it as final.
 - **Exit codes:** PR #15's existing check adapter uses 0/1/2; this document proposes separate 3/4 for I/O/internal failures. Choose one policy before a compile CLI is implemented. There is no reason to break a working check adapter merely to match an unapproved proposal.
 - **Ordering and recovery:** PR #15 orders semantic findings by rule registration and reports structural shape errors before analysis. The v1 proposal retains that ordering; #3 review must decide whether to freeze it as public behavior.

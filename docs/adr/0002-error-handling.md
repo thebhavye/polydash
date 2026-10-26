@@ -14,7 +14,7 @@ Failing on the first semantic error forces repeated edits. Unrestricted recovery
 
 Stages return success with a value and no error diagnostics, or failure with diagnostics and no value. Syntax failure stops that input; additional syntax recovery is optional and bounded, never permission to analyze a partial parse. Semantic analysis collects independent errors and skips checks with invalid prerequisites. Only successful analysis exposes DashboardIR. Warnings permit generation. Check-only shares parsing/analysis and stops before generation.
 
-Candidate exit codes: 0 success including warnings, 1 invalid input, 2 usage error, 3 I/O failure, 4 internal failure. No compile CLI exists on this branch. The parallel Python check adapter in PR #15 uses 2 for usage, I/O and unavailable YAML; review must choose whether to preserve or migrate that contract. Normal input errors use diagnostics; unexpected exceptions are caught by the driver and reported as internal errors.
+Candidate exit codes: 0 success including warnings, 1 invalid input, 2 usage error, 3 I/O failure, 4 internal failure. No compile CLI exists yet. The merged Python check adapter from PR #15 uses 2 for usage, I/O and unavailable YAML; review must choose whether to preserve or migrate that contract. Normal input errors use diagnostics; unexpected exceptions are caught by the driver and reported as internal errors.
 
 | Scenario | Proposed observable result | Generator / writer | Exit |
 | --- | --- | --- | --- |

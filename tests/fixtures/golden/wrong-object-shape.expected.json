@@ -1,0 +1,38 @@
+[
+  {
+    "rule_id": "PD1002",
+    "severity": "error",
+    "message": "Unknown property 'url'",
+    "path": "/components/0/data/url",
+    "location": {
+      "file": "golden/wrong-object-shape.json",
+      "line": 11,
+      "column": 16,
+      "excerpt": "        \"url\": \"sales.csv\""
+    }
+  },
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'source'",
+    "path": "/components/0/data/source",
+    "location": {
+      "file": "golden/wrong-object-shape.json",
+      "line": 10,
+      "column": 15,
+      "excerpt": "      \"data\": {"
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-object-shape.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

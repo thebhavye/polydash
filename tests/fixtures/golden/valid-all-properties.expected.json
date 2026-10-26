@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD2001",
+    "severity": "warning",
+    "message": "Filter title is missing or blank",
+    "path": "/components/2/title",
+    "location": {
+      "file": "golden/valid-all-properties.json",
+      "line": 55,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/children/1/title",
+    "location": {
+      "file": "golden/valid-all-properties.json",
+      "line": 21,
+      "column": 9,
+      "excerpt": "        {"
+    }
+  }
+]

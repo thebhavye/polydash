@@ -1,0 +1,38 @@
+[
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/0/children/0/id",
+    "location": {
+      "file": "golden/duplicate-nested.json",
+      "line": 15,
+      "column": 17,
+      "excerpt": "          \"id\": \"sales\","
+    }
+  },
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/1/id",
+    "location": {
+      "file": "golden/duplicate-nested.json",
+      "line": 36,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/children/1/title",
+    "location": {
+      "file": "golden/duplicate-nested.json",
+      "line": 21,
+      "column": 9,
+      "excerpt": "        {"
+    }
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "trend",
+      "type": "chart",
+      "data": {
+        "source": "sales.csv"
+      },
+      "series": [
+        1
+      ],
+      "kind": "line",
+      "stacked": false
+    }
+  ]
+}

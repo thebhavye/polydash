@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected boolean",
+    "path": "/components/0/stacked",
+    "location": {
+      "file": "golden/wrong-boolean.json",
+      "line": 17,
+      "column": 18,
+      "excerpt": "      \"stacked\": \"false\""
+    }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-boolean.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]

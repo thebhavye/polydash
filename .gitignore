@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+
+# Python packaging and environments
+dist/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local credentials (keep example files reviewable)
+.env
+.env.local

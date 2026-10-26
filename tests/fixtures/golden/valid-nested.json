@@ -1,0 +1,65 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "summary",
+      "type": "group",
+      "layout": {
+        "direction": "row"
+      },
+      "children": [
+        {
+          "id": "sales",
+          "type": "metric",
+          "title": "Sales",
+          "value": 42,
+          "unit": "USD"
+        },
+        {
+          "id": "trend",
+          "type": "chart",
+          "data": {
+            "source": "sales.csv"
+          },
+          "series": [
+            "revenue"
+          ],
+          "kind": "line",
+          "stacked": false
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "type": "table",
+      "data": {
+        "source": "sales.csv"
+      },
+      "columns": [
+        "revenue"
+      ],
+      "rows": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "region",
+      "type": "filter",
+      "options": [
+        "North",
+        "South"
+      ],
+      "multiple": true
+    }
+  ]
+}

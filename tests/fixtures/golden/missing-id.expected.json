@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'id'",
+    "path": "/components/0/id",
+    "location": {
+      "file": "golden/missing-id.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
+  }
+]
