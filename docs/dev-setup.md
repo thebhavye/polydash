@@ -2,6 +2,16 @@
 
 Python 3.10+ is required; CI exercises 3.10 and 3.12. Run commands from the repository root. Create a fresh environment without system site packages:
 
+On Debian/Ubuntu installations using the system Python, the `venv` module may
+be present while `ensurepip` is missing. If `python3 -m venv .venv` reports that
+the environment could not be created because `ensurepip` is unavailable,
+install the distribution's Python `venv` package matching that interpreter
+(the error names the package, for example `python3.12-venv`), then retry.
+Some distributions also expose system Python as `python3` without a `python`
+alias; use `python3 -m venv .venv` in that case. After activating the venv,
+`python` refers to the environment interpreter. GitHub Actions uses
+`setup-python`, which already provides a working venv/pip.
+
 ```sh
 python -m venv .venv
 ```
