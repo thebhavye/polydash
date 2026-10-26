@@ -68,4 +68,3 @@ when a required check fails or is pending.
 
 Until that evidence is recorded, #12 remains open. This PR completes the
 available setup/evidence work and deliberately uses Refs rather than Fixes.
-
