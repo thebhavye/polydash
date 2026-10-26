@@ -48,7 +48,7 @@ UTF-8 configuration
 | --- | --- | --- | --- |
 | Lexer/parser frontend | SourceFile: identity, original decoded text, format | StageResult<LocatedConfig> | Recognize format syntax, retain value locations, reject malformed structural shapes, adapt to shared value tree; no component-schema checks. |
 | Semantic analyzer | LocatedConfig, ComponentSchema | StageResult<DashboardIR> | Validate required fields, kinds/properties/types and IDs; gate the shared candidate as valid IR. |
-| Dashboard IR | Successful analysis | Typed dashboard nodes with provenance | Represent validated meaning without rereading source text. |
+| Dashboard IR | Successful analysis | Dashboard configuration tree with a source-location side table | Represent validated meaning without rereading source text. |
 | Generator | DashboardIR, options | StageResult<GeneratedFile[]> | Deterministically render HTML/CSS and JS where needed; escape content for its output context. No filesystem writes. |
 | Driver | Input path, options | Artifacts or diagnostics and process status | Read source, select frontend, sequence stages, gate generation, render diagnostics and write results. |
 
@@ -59,7 +59,8 @@ these boundaries for Issue #4; it does not finalize the unresolved runtime or IR
 
 ## Proposed stage interfaces
 
-Pseudotypes describe boundaries; no code or API is implemented.
+The pseudotypes below describe the future full compiler API. The implemented
+Python interfaces are listed separately below; they do not implement this sum type.
 
 ```text
 SourceFile = { sourceId, displayPath, text, format }
@@ -100,6 +101,32 @@ cross-format fixtures; they are not claimed by PR #15.
 Syntax errors point to the offending start position or EOF position. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
 
 Source-related diagnostics require a location. I/O errors and internal failures may lack one; never fabricate a line for an unread file. One model feeds human and structured output. PR #15 currently orders semantic findings by registered rule then traversal order, with golden tests locking that behavior. #3 owns the final diagnostic format, severities, source mapping and any ordering change. Do not collapse distinct findings sharing a location.
+
+## Implemented v1 interfaces
+
+The current checkout has these boundaries; these names are sufficient to trace
+an input without knowing the proposed module layout:
+
+| Owner | Actual call and payload | Failure / next stage |
+| --- | --- | --- |
+| CLI (`polydash/__main__.py`) | UTF-8 text and filename to `check(text, filename)` | I/O/usage/dependency errors exit 2 |
+| Frontend (`polydash/loaders.py`) | `load(text, filename) -> Dashboard(config, spans)` | `ParseFailure` contains one diagnostic; syntax/structural failures stop analysis |
+| Analysis (`polydash/analyzer.py`) | `analyze(candidate, component_schema=None) -> list[Diagnostic]` | Collect schema/ID errors and title warnings; no format-parser dependency |
+| Gate (`polydash/__init__.py`) | `Result(ir, diagnostics)` | Any error makes ir None; warnings retain the candidate as validated IR |
+| Preview (`polydash/generator.py`) | `generate_html(validated_ir) -> str` | Returns one self-contained HTML string; does not read bindings or write files |
+| CLI writer | Optional HTML path and diagnostics JSON path | Reject path aliases before writes; writes artifacts and reports I/O failures |
+
+For malformed JSON, the frontend catches the error first; the gate returns no
+IR and the generator is never called. For a missing component id, the frontend
+returns a structurally valid candidate, analysis emits PD1003 using its source
+map, and the gate blocks generation. A warning-only filter retains IR and may
+render. These are implemented behavior; multi-file artifact staging, public
+serialized IR compatibility and separate internal/I/O statuses remain proposals.
+
+The static renderer escapes configured text, renders native filters and inline
+table rows, and labels charts as placeholders. It does not fetch DataBinding
+sources or promise interactive chart/filter behavior. Three proposed ADRs remain
+proposed until review; documenting the implementation does not ratify them.
 
 ## Proposed source tree and dependency direction
 
