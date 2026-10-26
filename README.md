@@ -91,6 +91,12 @@ Data sources are opaque strings; they are not fetched or executed.
 JSON and YAML produce the same configuration shape and source-location map.
 The shared analyzer validates that candidate before it is exposed as IR.
 
+The [accessibility/responsive research spike](docs/research/a11y-responsive-spike.md)
+proposes bounded authoring checks and records what requires generated output or
+browser testing. No new accessibility rules are implemented. The
+[issue review](docs/issue-review.md) records evidence and remaining criteria for
+all fourteen original issues.
+
 ## Contracts and tests
 
 - [Shared IR and component schema](docs/ir.md)

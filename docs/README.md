@@ -16,6 +16,8 @@ Use [README](../README.md) for current capabilities and [CONTRIBUTING](../CONTRI
 | [Validation and diagnostics](validation-rules.md) | Rule invocation, IDs, severities, human/structured output, golden examples | Implementation contract, pending #3 owner review. |
 | [YAML subset](yaml-support.md) | Optional dependency, scalar resolution and rejected constructs | Implementation contract; YAML is available only with the extra. |
 | [Equivalence tests](equivalence-tests.md) | Equality rules and adding paired fixtures | Test contract proposed for #11. |
+| [Accessibility/responsive spike](research/a11y-responsive-spike.md) | Static versus render-time findings, proposed rules, prior art and limitations | Informative research for #13; no new analyzer rules. |
+| [Issue review](issue-review.md) | Evidence and open acceptance criteria for #1–#14 | Informative dated review, not issue closure. |
 | [Bug template](../.github/ISSUE_TEMPLATE/bug_report.md) | Reproduction and expected/actual diagnostics | Contributor workflow template. |
 | [Enhancement / validation template](../.github/ISSUE_TEMPLATE/enhancement.md) | Scope, dependencies, decisions and test expectations | Contributor workflow template. |
 | [PR template](../.github/pull_request_template.md) | Change explanation, issue links and verification | Contributor workflow template. |
@@ -38,6 +40,6 @@ Before both PRs merge, reconcile runtime, provenance units, IR representation, s
 
 ## Future documents
 
-Issue #4 owns a final stage integration/error contract. Issue #13 owns the accessibility/responsive research spike. Those deliverables do not exist here; this index does not link to nonexistent local files. CI/setup work is tracked by #12; a workflow alone does not satisfy all its acceptance criteria.
+Issue #4 owns a final stage integration/error contract, which is not yet present here. The #13 research spike is linked above; its proposals do not implement new checks. CI/setup work is tracked by #12; a workflow alone does not satisfy all its acceptance criteria.
 
 Documentation changes should preserve clear status labels, use relative links for existing repository files, identify the owner issue and keep examples consistent with fixtures. Record decisions and their rationale in ADRs marked proposed until reviewed; avoid describing planned features as implemented.
