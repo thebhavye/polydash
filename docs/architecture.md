@@ -4,7 +4,7 @@ Status: **Proposed**, pending team agreement for [Issue #1](https://github.com/t
 
 ## Repository baseline
 
-Historical starting point, reviewed 2026-10-26: main at `fce742a` contained only README.md. The architecture and Python validation adapter have since merged. A code generator does not yet exist. Config2UI code is not available here. The README defines intended scope.
+Historical starting point, reviewed 2026-10-26: main at `fce742a` contained only README.md. The architecture, Python validation adapter and static HTML preview have since merged. A full HTML/CSS/JS compiler remains future work. Config2UI code is not available here. The README defines intended scope.
 
 Companion proposals:
 
