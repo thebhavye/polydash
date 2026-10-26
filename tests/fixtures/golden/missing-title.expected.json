@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1003",
+    "severity": "error",
+    "message": "Missing required field 'title'",
+    "path": "/title",
+    "location": {
+      "file": "golden/missing-title.json",
+      "line": 1,
+      "column": 1,
+      "excerpt": "{"
+    }
+  }
+]

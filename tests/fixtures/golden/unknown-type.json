@@ -1,0 +1,12 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "bad",
+      "type": "mystery"
+    }
+  ]
+}

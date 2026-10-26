@@ -1,0 +1,16 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "sales",
+      "type": "metric",
+      "title": "Sales",
+      "value": 42,
+      "unit": "USD",
+      "colour": "red"
+    }
+  ]
+}

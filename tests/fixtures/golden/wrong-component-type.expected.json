@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected string",
+    "path": "/components/0/type",
+    "location": {
+      "file": "golden/wrong-component-type.json",
+      "line": 9,
+      "column": 15,
+      "excerpt": "      \"type\": [],"
+    }
+  }
+]

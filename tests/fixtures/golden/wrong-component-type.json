@@ -1,0 +1,15 @@
+{
+  "title": "Overview",
+  "layout": {
+    "direction": "column"
+  },
+  "components": [
+    {
+      "id": "sales",
+      "type": [],
+      "title": "Sales",
+      "value": 42,
+      "unit": "USD"
+    }
+  ]
+}

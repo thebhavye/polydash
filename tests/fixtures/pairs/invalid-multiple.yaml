@@ -1,0 +1,13 @@
+title: 5
+layout:
+  direction: diagonal
+components:
+- id: same
+  type: chart
+  series: 5
+  unexpected: true
+- id: same
+  type: metric
+  value: wrong
+- type: unknown
+- id: missing-type

@@ -1,0 +1,14 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected number",
+    "path": "/components/0/value",
+    "location": {
+      "file": "golden/wrong-number.json",
+      "line": 11,
+      "column": 16,
+      "excerpt": "      \"value\": true,"
+    }
+  }
+]

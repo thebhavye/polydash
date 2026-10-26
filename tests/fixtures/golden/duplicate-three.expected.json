@@ -1,0 +1,38 @@
+[
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/0/id",
+    "location": {
+      "file": "golden/duplicate-three.json",
+      "line": 8,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  },
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/1/id",
+    "location": {
+      "file": "golden/duplicate-three.json",
+      "line": 15,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  },
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/2/id",
+    "location": {
+      "file": "golden/duplicate-three.json",
+      "line": 22,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  }
+]

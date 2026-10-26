@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected array",
+    "path": "/components/0/rows/0",
+    "location": {
+      "file": "golden/wrong-dimensions.json",
+      "line": 17,
+      "column": 9,
+      "excerpt": "        1,"
+    }
+  },
+  {
+    "rule_id": "PD1004",
+    "severity": "error",
+    "message": "Expected array",
+    "path": "/components/0/rows/1",
+    "location": {
+      "file": "golden/wrong-dimensions.json",
+      "line": 18,
+      "column": 9,
+      "excerpt": "        2"
+    }
+  }
+]

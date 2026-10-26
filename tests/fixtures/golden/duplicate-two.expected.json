@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/0/id",
+    "location": {
+      "file": "golden/duplicate-two.json",
+      "line": 8,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  },
+  {
+    "rule_id": "PD1005",
+    "severity": "error",
+    "message": "Duplicate component ID 'sales'",
+    "path": "/components/1/id",
+    "location": {
+      "file": "golden/duplicate-two.json",
+      "line": 15,
+      "column": 13,
+      "excerpt": "      \"id\": \"sales\","
+    }
+  }
+]
