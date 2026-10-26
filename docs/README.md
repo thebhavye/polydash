@@ -10,6 +10,7 @@ Use [README](../README.md) for current capabilities and [CONTRIBUTING](../CONTRI
 | --- | --- | --- |
 | [README](../README.md) | Current feature/status summary and check adapter usage | Informative; code and fixtures establish implemented behavior. |
 | [Contributing](../CONTRIBUTING.md) | Branches, commits, PRs, teammate review and required tests | Workflow guidance proposed by issue #5. |
+| [Portability evidence](portability-evidence.md) | Verified main matrix, clean Linux setup and required-check admin checklist | Informative evidence for #12; enforcement still requires an administrator. |
 | [Development setup](dev-setup.md) | Clean Python environment, installation and test commands | Operational guidance; platform CI verifies commands. |
 | [IR and component schema](ir.md) | Shared tree, component properties, source map and conformance examples | Implementation contract, pending #2 owner review. |
 | [JSON grammar](json-grammar.md) | Accepted syntax/shapes, semantic boundary and fixture inventory | Implementation contract, pending #6 joint review. |
