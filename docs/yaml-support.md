@@ -62,3 +62,17 @@ recursion limit`) with the source root location. No partial IR is returned and
 the CLI exits 1 without a traceback, including when structured output is requested.
 The exact depth is interpreter-dependent; this is graceful error handling, not a
 fixed nesting limit or a general memory/CPU quota.
+
+## Frontend contract verification
+
+Run `python -m unittest tests.test_yaml_conformance -v` for the focused frontend
+suite. The minimal, chart and nested IR-spec examples are checked through both
+`.yaml` and `.yml`, comparing their complete config trees with the JSON source.
+Malformed flow, unterminated quoted scalar and duplicate-key cases assert the
+shared diagnostic fields, severity, exact line/column/excerpt and human form.
+Unsupported anchors, aliases, explicit tags and multiple documents have located
+rejection assertions. The standard discovery command includes this suite.
+
+These tests call the shared check API. They do not modify semantic analysis or
+the generator, install dependencies, or turn opaque data sources into fetches.
+The declared optional YAML extra and its supported subset remain unchanged.
