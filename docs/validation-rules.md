@@ -20,7 +20,7 @@ The pass never mutates the input and collects recoverable errors and warnings.
 | PD2002 | warning | accessibility | Known chart has an omitted or blank title |
 
 `analyzer.RULES` registers the semantic IDs in the above order; findings are
-ordered by rule and then traversal/insertion order. The generic property walker
+ordered by rule and then the rule-specific order detailed below. The generic property walker
 reads requirements from `schema.py`; new schema properties require no rule
 changes. Unknown fields do not receive type checks. An outer type mismatch
 stops traversal of that value, while other fields/components continue.
@@ -94,3 +94,49 @@ preview renders filter titles as wrapping labels for native selects and chart
 titles as visible headings above honest data placeholders. A future chart
 renderer will need its own title/description and accessibility review.
 Chart titles do not replace useful data summaries, tables or text alternatives.
+
+## Rule context, registration and extension contract
+
+The implemented rule interface is the function `analyze(candidate,
+component_schema=None) -> list[Diagnostic]`, with the nested reporting hook
+specified above. V1 intentionally registers diagnostic IDs in `RULES` rather
+than introducing a class/plugin for every rule. The architecture's
+`Rule.check` pseudotype describes a possible future extraction, not an API
+that extensions can import today.
+
+Context consists of the structurally parsed Dashboard candidate (`config` and
+`spans`) plus the schema registry. Candidate does not imply semantic validity:
+a rule must tolerate absent/unknown/mistyped properties. It may read its schema
+entry and use `candidate.location(tuple_path)`; it must not read source files,
+use JSON/YAML parser classes, mutate config, write output or invoke generation.
+The rule emits through `report(rule_id, message, tuple_path, severity)`; the
+reporter creates the RFC 6901 path and resolves the closest existing source
+location. Return findings rather than raising for recoverable user mistakes.
+
+To add a rule, allocate a stable ID and document its severity/category in the
+table, register it once in `RULES`, and invoke its check from the existing walk
+or whole-dashboard pass as appropriate. Add passing/violating source-aware
+fixtures and cross-format cases. A property type belongs in schema data, not
+in a special-case rule branch. Any extraction to separate callable rules must
+preserve this input/output contract and diagnostic order.
+
+Ordering is registered rule ID order followed by that rule's emission order;
+there is no final source-position sort. For example, a PD1003 at line 20 comes
+before a PD1004 at line 3. Property checks visit fields in source insertion
+order and arrays/components in traversal order. Missing required fields follow
+the schema's required-field list within each object. PD1005 groups collisions
+by ID in first-seen ID order, then emits each group's occurrences in traversal
+order: IDs [a,b,b,a] report component positions [0,3,1,2], not [0,1,2,3]. Duplicate occurrences remain separate even if their source locations
+coincide; missing fields can share a parent location. Do not deduplicate them.
+
+Warnings alone retain IR and allow generation. Errors suppress downstream IR;
+all recoverable errors and warnings are still returned. Syntax/structural
+failures stop before the pass and yield their one parse diagnostic instead.
+Unexpected implementation exceptions propagate to the adapter and are not
+reclassified as a schema or parse rule. Future internal-error CLI statuses are
+owned by the separate pipeline proposal, not this source-diagnostic format.
+
+Review of this contract does not approve a new runtime dependency or a public
+plugin ABI. The exact structured/human example above is executable evidence in
+`CompilerTests.test_documented_diagnostic_example`; golden tests independently
+assert the stable IDs, severities, order and locations for multi-error inputs.
