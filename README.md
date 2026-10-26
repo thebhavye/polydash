@@ -85,20 +85,11 @@ Data sources are opaque strings; they are not fetched or executed.
 JSON and YAML both lower into the same IR, then pass through the same analyzer.
 Source spans stay beside the IR so physical positions survive parsing.
 
-## Evidence and documentation
-
-PolyDash is an educational compiler project. Declarative configuration,
-validation and compilation have established prior art; the
-[nine-system survey proposed in PR #16](https://github.com/thebhavye/polydash/blob/68abacca4f29897e37d385c817a30cf950299000/docs/research/dashboard-generator-survey.md)
-explains that evidence, including source-aware validation in Quarto. This
-project does not claim those capabilities are unique. Code generation remains
-planned.
-
-See the [docs index](docs/README.md) for each document's authority, the
-[contribution guide](CONTRIBUTING.md) for workflow and test expectations, and
-the [issue review](docs/issue-review.md) for current evidence and open decisions.
-The [accessibility/responsive spike](docs/research/a11y-responsive-spike.md)
-contains proposals only; no new accessibility rules are implemented.
+The [accessibility/responsive research spike](docs/research/a11y-responsive-spike.md)
+proposes bounded authoring checks and records what requires generated output or
+browser testing. No new accessibility rules are implemented. The
+[issue review](docs/issue-review.md) records evidence and remaining criteria for
+all fourteen original issues.
 
 ## Contracts and tests
 
@@ -114,6 +105,10 @@ possible future front ends. Accessibility and responsive-layout rules remain
 research topics, not implemented features.
 
 ## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch/PR workflow, required tests
+and teammate review. The [documentation index](docs/README.md) distinguishes
+implementation contracts from pending architecture proposals.
 
 Use feature branches and pull requests; do not push directly to main. Describe
 the behavior, linked issues and validation in each PR. Architecture contracts and
