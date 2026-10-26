@@ -22,6 +22,12 @@ still planned. The CI workflow targets Windows, Linux and macOS. The check
 adapter below validates input only. The new schema/IR
 and diagnostic contracts are initial baselines for architecture-owner review;
 the prerequisite architecture issues #2/#3 have not been marked approved.
+The [proposed architecture baseline](docs/architecture.md),
+[decision records](docs/adr/0001-language-runtime.md),
+[shared JSON/IR contract](docs/contracts/ir-json-shared-contract.md) and
+[backlog audit](docs/backlog-audit.md) document open decisions. A
+[comparison survey](docs/research/dashboard-generator-survey.md) records
+prior art; source-aware validation is a project goal, not a novelty claim.
 
 ## Local setup and checks
 
@@ -82,15 +88,15 @@ Review every changed expected diagnostic before committing.
 
 Supported component types: metric, chart, table, filter and nested group.
 Data sources are opaque strings; they are not fetched or executed.
-JSON and YAML both lower into the same IR, then pass through the same analyzer.
-Source spans stay beside the IR so physical positions survive parsing.
+JSON and YAML produce the same configuration shape and source-location map.
+The shared analyzer validates that candidate before it is exposed as IR.
 
 ## Contracts and tests
 
 - [Shared IR and component schema](docs/ir.md)
 - [JSON grammar, parse/semantic boundary and fixture inventory](docs/json-grammar.md)
 - [Validation rules, diagnostics and golden regeneration](docs/validation-rules.md)
-- [YAML subset and dependency approval status](docs/yaml-support.md)
+- [YAML subset and optional dependency](docs/yaml-support.md)
 - [Cross-format equivalence and adding paired fixtures](docs/equivalence-tests.md)
 
 The v1 scope excludes expressions, variables, custom components, includes,
