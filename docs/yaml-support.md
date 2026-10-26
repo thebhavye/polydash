@@ -2,13 +2,20 @@
 
 ## Dependency status
 
-The front end uses `PyYAML` (`yaml.SafeLoader`); version 6.0.3 was used for local
-verification. **Owner approval remains pending**, as requested in this session
-and required by issue #10. It is deliberately not added to `pyproject.toml`.
-Before merging the YAML feature, the owner must approve this library and declare
-`PyYAML>=6.0.3,<7` as a runtime dependency. This approval has not occurred.
-JSON has no third-party runtime dependencies. The local full suite requires
-PyYAML already available; a missing library yields a clear CLI error.
+YAML is an **optional extra**, declared in `pyproject.toml` as
+`PyYAML>=6.0.3,<7`. A base installation supports JSON without PyYAML.
+Install YAML support from this checkout with:
+
+```sh
+python -m pip install ".[yaml]"
+```
+
+For a published package, the corresponding command is
+`python -m pip install "polydash[yaml]"`. No package publication is implied.
+The full test suite and CI install the extra. Without it the CLI returns status
+2 with an installation hint; YAML is not advertised as available in a base install.
+This explicit optional-extra decision replaces the prior undeclared-dependency
+proposal; it does not approve unrelated schema/architecture decisions.
 
 `.json`, `.yaml`, `.yml` (case-insensitive) select loader classes through the
 `LOADERS` registry. Both return the same Dashboard/config + source map. Semantic
@@ -46,3 +53,12 @@ examples and all-properties coverage, plus two semantically invalid pairs.
 duplicate keys, multiple documents, anchors, aliases, tags, timestamps, sets,
 complex/non-string keys, merge keys, non-finite numbers and empty documents.
 The standard runner asserts rejection categories and source positions.
+
+## Excessive nesting
+
+If parsing, YAML composition/conversion or structural validation exceeds Python's
+recursion capacity, the loader returns PD0001 (`Input nesting exceeds the parser
+recursion limit`) with the source root location. No partial IR is returned and
+the CLI exits 1 without a traceback, including when structured output is requested.
+The exact depth is interpreter-dependent; this is graceful error handling, not a
+fixed nesting limit or a general memory/CPU quota.

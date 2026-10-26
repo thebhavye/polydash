@@ -79,3 +79,9 @@ No expressions, variables, interpolation, references between components,
 external includes, user-defined components, live data fetching, or additional
 layout syntax are supported in v1. Strings containing expression-like text
 remain literal strings. No YAML constructs apply to JSON.
+
+## Excessive nesting
+
+Parser/structural-validation recursion overflow is reported as PD0001 at the
+source root, with no IR and CLI exit status 1 rather than a Python traceback.
+The exact accepted depth depends on the interpreter; no fixed depth is promised.

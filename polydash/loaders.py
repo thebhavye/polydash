@@ -172,4 +172,10 @@ def load(text, filename):
     loader = LOADERS.get(Path(filename).suffix.lower())
     if loader is None:
         raise ParseFailure("PD0003", "Expected .json, .yaml or .yml", (), Source(text, filename).span(0))
-    return loader(text, filename).load()
+    source = loader(text, filename)
+    try:
+        return source.load()
+    except RecursionError:
+        # Parsers and structural validation recurse. Report excessively nested
+        # user input after unwinding, without exposing a Python traceback.
+        source.fail("PD0001", "Input nesting exceeds the parser recursion limit")

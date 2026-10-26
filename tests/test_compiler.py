@@ -129,8 +129,43 @@ class CompilerTests(unittest.TestCase):
                                     capture_output=True, text=True)
             self.assertEqual(status, result.returncode, result.stderr)
             if status:
-                self.assertIn('dependency approval is pending', result.stderr)
+                self.assertIn('python -m pip install "polydash[yaml]"', result.stderr)
                 self.assertNotIn('Traceback', result.stderr)
+
+    def test_deep_input_returns_diagnostic_without_ir(self):
+        # Construct text directly: serializing nested Python values can itself
+        # hit the interpreter's recursion limit before reaching the compiler.
+        cases = [
+            ('json', '[' * 2000 + '0' + ']' * 2000),
+            ('json', '{"x":' * 2000 + '0' + '}' * 2000),
+            ('yaml', '[' * 2000 + '0' + ']' * 2000),
+            ('yaml', ''.join('  ' * i + 'x:\n' for i in range(1200))),
+        ]
+        for suffix, text in cases:
+            with self.subTest(suffix=suffix, prefix=text[:20]):
+                result = check(text, 'deep.' + suffix)
+                self.assertIsNone(result.ir)
+                self.assertEqual(['PD0001'], [d.rule_id for d in result.diagnostics])
+                self.assertIn('nesting', result.diagnostics[0].message)
+
+    def test_cli_deep_input_has_no_traceback(self):
+        for suffix in ('json', 'yaml'):
+            with self.subTest(suffix=suffix), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / ('deep.' + suffix)
+                output = Path(directory) / 'diagnostics.json'
+                path.write_text('[' * 2000 + '0' + ']' * 2000, encoding='utf-8')
+                result = subprocess.run(
+                    [sys.executable, '-m', 'polydash', str(path),
+                     '--diagnostics-json', str(output)],
+                    capture_output=True, text=True, timeout=30)
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertNotIn('Traceback', result.stderr)
+                self.assertNotIn('RecursionError', result.stderr)
+                self.assertIn('PD0001', result.stderr)
+                diagnostics = json.loads(output.read_text(encoding='utf-8'))
+                self.assertEqual(1, len(diagnostics))
+                self.assertEqual('PD0001', diagnostics[0]['rule_id'])
+                self.assertEqual(path.as_posix(), diagnostics[0]['location']['file'])
 
     def test_conformance_ir_preserves_every_input_value(self):
         for path in (FIXTURES / 'pairs').glob('valid-*.json'):

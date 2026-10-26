@@ -19,7 +19,7 @@ def main():
     except ModuleNotFoundError as error:
         if error.name != "yaml":
             raise
-        parser.exit(2, "polydash: YAML requires PyYAML; dependency approval is pending (docs/yaml-support.md)\n")
+        parser.exit(2, 'polydash: YAML support is optional; install it with: python -m pip install "polydash[yaml]"\n')
     if result.diagnostics:
         print(result.human(), file=sys.stderr)
     if args.diagnostics_json:

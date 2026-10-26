@@ -14,12 +14,12 @@ Implemented in this increment (issues #6–#11):
   validation, collecting all recoverable errors.
 - Human and structured JSON diagnostics, a golden regression corpus and
   JSON/YAML equivalence tests.
-- YAML/YML front-end implementation, verified locally using PyYAML 6.0.3.
-  **Dependency approval is pending**; PyYAML is not declared as a package
-  dependency. See [YAML support](docs/yaml-support.md) before merging that feature.
+- Optional YAML/YML front end: install the declared `yaml` extra (PyYAML).
+  See [YAML support](docs/yaml-support.md) for the subset and installation.
 
-HTML/CSS/JS code generation, live data access, a full compile CLI, and CI are
-still planned. The check adapter below validates input only. The new schema/IR
+HTML/CSS/JS code generation, live data access and a full compile CLI are
+still planned. The CI workflow targets Windows, Linux and macOS. The check
+adapter below validates input only. The new schema/IR
 and diagnostic contracts are initial baselines for architecture-owner review;
 the prerequisite architecture issues #2/#3 have not been marked approved.
 
@@ -37,15 +37,18 @@ Human diagnostics go to stderr; the option also writes a JSON artifact.
 Exit status is 0 for success, 1 for invalid input, and 2 for usage/I/O errors or
 an unavailable YAML library. Invalid input never exposes downstream IR.
 
-The full suite requires PyYAML already installed (dependency approval pending):
+Install the optional YAML dependency before running the full suite:
 
 ```sh
+python -m pip install ".[yaml]"
 python -m unittest discover -v
 ```
 
 Tests cover 36 golden configurations, 29 malformed-input fixtures, seven
 JSON/YAML pairs, source locations, schema extensibility and CLI behavior. No
-CI service is configured yet; the same command is ready for later CI wiring.
+external services are required by these tests. A GitHub Actions matrix runs the
+suite on Windows/Linux/macOS with Python 3.10 and 3.12 (issue #12). See
+[clean development setup](docs/dev-setup.md).
 
 Regenerate goldens only for intentional diagnostic changes:
 
@@ -101,7 +104,8 @@ Use feature branches and pull requests; do not push directly to main. Describe
 the behavior, linked issues and validation in each PR. Architecture contracts and
 new dependencies require owner review before merge. Compiler changes need
 positive/negative fixtures; cross-format changes need paired fixtures. The goal
-is consistent behavior on Windows, Linux and macOS; platform CI is still planned.
+is consistent behavior on Windows, Linux and macOS; the test matrix verifies
+these platforms on each PR and push.
 
 | Member | Focus |
 | --- | --- |
