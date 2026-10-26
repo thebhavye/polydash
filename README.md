@@ -100,6 +100,10 @@ research topics, not implemented features.
 
 ## Contributing
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch/PR workflow, required tests
+and teammate review. The [documentation index](docs/README.md) distinguishes
+implementation contracts from pending architecture proposals.
+
 Use feature branches and pull requests; do not push directly to main. Describe
 the behavior, linked issues and validation in each PR. Architecture contracts and
 new dependencies require owner review before merge. Compiler changes need
