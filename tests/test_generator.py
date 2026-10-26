@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -81,6 +82,49 @@ class HtmlPrototypeTests(unittest.TestCase):
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertIn("PD2001", run.stderr)
             self.assertIn("<select>", output.read_text(encoding="utf-8"))
+
+    def test_output_cannot_replace_source_or_diagnostics(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source.json"
+            source_bytes = (ROOT / "tests/fixtures/pairs/valid-minimal.json").read_bytes()
+            source.write_bytes(source_bytes)
+
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--output", str(source)], cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertIn("same file", run.stderr)
+            self.assertEqual(source.read_bytes(), source_bytes)
+
+            diagnostics = Path(temporary) / "diagnostics.json"
+            diagnostics.write_text("keep me", encoding="utf-8")
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--diagnostics-json", str(diagnostics), "--output", str(diagnostics)],
+                                 cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertEqual(diagnostics.read_text(encoding="utf-8"), "keep me")
+            self.assertEqual(source.read_bytes(), source_bytes)
+
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--diagnostics-json", str(source)],
+                                 cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertEqual(source.read_bytes(), source_bytes)
+
+    def test_existing_hardlink_alias_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source.json"
+            source_bytes = (ROOT / "tests/fixtures/pairs/valid-minimal.json").read_bytes()
+            source.write_bytes(source_bytes)
+            alias = Path(temporary) / "alias.html"
+            try:
+                os.link(source, alias)
+            except OSError as error:
+                self.skipTest(f"Hard links unavailable: {error}")
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--output", str(alias)], cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertEqual(source.read_bytes(), source_bytes)
+            self.assertEqual(alias.read_bytes(), source_bytes)
 
 
 if __name__ == "__main__":
