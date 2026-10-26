@@ -67,7 +67,9 @@ class CompilerTests(unittest.TestCase):
                 if json_path.name.startswith('valid-'):
                     self.assertFalse(any(d.severity == 'error' for d in left.diagnostics))
                 else:
-                    self.assertTrue(left.diagnostics)
+                    self.assertIsNone(left.ir, 'An invalid pair must be rejected, not merely warn')
+                    self.assertTrue(any(d.severity == 'error' for d in left.diagnostics),
+                                    'An invalid pair must have an error diagnostic')
 
     def test_parse_rejections(self):
         shape_names = {'root-array', 'layout-array', 'components-object', 'component-scalar',
