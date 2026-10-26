@@ -47,6 +47,8 @@ Human diagnostics go to stderr; `--diagnostics-json` also writes a JSON artifact
 Open `dashboard.html` in a browser to show the prototype. The demo's table rows
 are illustrative values stored directly in the configuration; the filter is a
 native control and does not change other components.
+
+![Static HTML prototype preview](docs/images/prototype-preview.png)
 Exit status is 0 for success, 1 for invalid input, and 2 for usage/I/O errors or
 an unavailable YAML library. Invalid input never exposes downstream IR.
 
