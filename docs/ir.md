@@ -45,8 +45,8 @@ IDs compare exactly, case-sensitively, without trimming or Unicode normalization
 Serialization for tests is `Dashboard.config` as JSON; spans are compared
 separately in source-aware diagnostics. Sorted object keys are canonical; list
 order and every scalar value are preserved. A parse-success tree can contain
-semantic errors; `check` exposes IR only after analysis passes. No code generator
-exists, and none is introduced or changed here.
+semantic errors; `check` exposes IR only after analysis passes. The merged static preview consumes this validated tree. It does not load data
+bindings or add fields/defaults to the IR.
 
 ## Conformance examples
 
@@ -80,3 +80,52 @@ represented through `children`, rather than a second layout-owned component
 list. Source format metadata is kept out of config; spans hold source-specific
 information. These choices finalize the README's provisional layout/metadata
 ideas for this increment and remain subject to architecture review.
+
+## Explicit input → IR projections
+
+Each JSON block below is both the complete input and the exact expected
+`Dashboard.config` projection after a successful check. The identity projection
+is intentional: analysis certifies the candidate instead of copying it into a
+second tree. YAML counterparts must yield exactly the same object and order.
+Source maps are additional fields on Dashboard, never inserted into config.
+
+Minimal Dashboard (Dashboard and Layout nodes):
+
+```json
+{"title":"Overview","layout":{"direction":"column"},"components":[]}
+```
+
+Chart with DataBinding (Dashboard → Component → DataBinding):
+
+```json
+{"title":"Sales","layout":{"direction":"row"},"components":[{"id":"trend","type":"chart","title":"Revenue","data":{"source":"sales.csv"},"series":["revenue"],"kind":"line","stacked":false}]}
+```
+
+Nested Layout and Component (Dashboard → Group → metric):
+
+```json
+{"title":"Sales","layout":{"direction":"column"},"components":[{"id":"summary","type":"group","layout":{"direction":"row"},"children":[{"id":"sales","type":"metric","value":42,"unit":"USD"}]}]}
+```
+
+For every example, `spans[()]` locates the Dashboard root and
+`spans[("layout",)]` locates its Layout. In the chart example,
+`spans[("components",0,"data")]` locates DataBinding and adding `"source"`
+locates the reference value. In the nested example,
+`spans[("components",0,"children",0)]` locates the metric node. All these paths
+are part of the same map, with file, line, column and excerpt from that input.
+A missing-field diagnostic locates the closest existing parent; it retains the
+missing field's logical path in the diagnostic.
+
+### Serialization and value decisions for review
+
+No default theme, title, chart kind or layout is inserted into config. Optional
+fields remain absent; renderer display fallbacks are not IR transformations.
+Source filename/format/provenance are outside semantic identity, as is the
+README's earlier proposed metadata object (not a v1 configuration property).
+JSON object key order is insignificant for comparison; array order and scalar
+values are preserved. Numbers use Python integers/floats; finite float precision
+is not an arbitrary-precision decimal guarantee. Booleans are not numbers for
+schema validation. Do not silently coerce numeric strings, IDs or data sources.
+
+This documents the v1 serialization candidate for explicit owner/peer review;
+accepting public IR import/export or changing representation is separate work.
