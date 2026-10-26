@@ -47,7 +47,10 @@ The suite includes structured diagnostic goldens and deep JSON/YAML rejection wi
 
 `.github/workflows/tests.yml` installs the package with YAML support in each fresh runner and executes the same commands on Ubuntu, Windows and macOS, with fail-fast disabled. Tests use temporary paths and the active interpreter. No packaging/deployment jobs are added.
 
-Local verification is performed on Windows with Python 3.12 in an isolated venv. Linux/macOS evidence must come from the linked PR workflow runs; do not infer successful runs from workflow configuration alone. Issue #12 stays open until its review, green-main and required-check acceptance criteria are satisfied. Repository branch-protection settings are not changed by this workflow.
+Earlier verification used an isolated Windows Python 3.12 venv. A fresh Linux
+venv run is recorded in the portability evidence below; macOS verification comes
+from the linked CI jobs. Do not infer successful runs from workflow configuration
+alone. Issue #12 stays open until its review, green-main and required-check acceptance criteria are satisfied. Repository branch-protection settings are not changed by this workflow.
 
 ## Verified setup and remaining enforcement
 
