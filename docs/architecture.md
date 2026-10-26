@@ -24,17 +24,15 @@ are merged, review these differences explicitly:
 
 | Baseline proposal | PR #15 implementation | Agreement needed |
 | --- | --- | --- |
-| TypeScript/Node candidate | Python 3.10+ package | Ratify or replace ADR 0001; do not maintain competing runtime plans. |
-| UTF-16 offset ranges | Python code-point line/column plus excerpt | Choose provenance units and representation before exposing a stable contract. |
-| Shared unvalidated tree then typed valid IR | Dictionary-backed Dashboard with source-map side table, checked before return | Decide whether this is the initial IR or requires a distinct semantic representation. |
-| Wrong dashboard shapes are semantic | Loader reports shape failures as PD0002 | Settle the explicit #6 boundary amendment. |
-| Separate proposed I/O/internal exit codes | CLI uses 2 for usage/I/O/missing YAML | Finalize #4 before claiming a shared CLI contract. |
+| Python 3.10+ adoption proposed in revised ADR 0001 | Python 3.10+ package | Keep one runtime for v1; review schema/IR separately. |
+| Code-point line/column plus excerpt for v1 | Python code-point line/column plus excerpt | End offsets/key ranges would be a later versioned improvement. |
+| Shared configuration plus side-table locations, validated before downstream return | Dictionary-backed Dashboard with source-map side table, checked before return | Treat this as v1 IR candidate; typed nodes require a separate reviewed migration. |
+| Structural shape failures in loader for v1 | Loader reports shape failures as PD0002 | Record as adopted v1 boundary; future reclassification requires coordinated spec/test change. |
+| Current check CLI 0/1/2; future compiler statuses open | CLI uses 2 for usage/I/O/missing YAML | #4 should preserve this adapter or explicitly plan a versioned CLI change. |
 
-No runtime migration or refactor is authorized by this documentation comparison.
-Existing PR #15 tests demonstrate its current behavior, not conformance to every
-proposal in this baseline. Its YAML extra and platform CI do not change this
-branch's implementation status. Resolve these choices in review; do not silently
-merge contradictory specifications.
+ADR 0001 now proposes adopting Python. PR #15 tests demonstrate the current
+validator behavior, while this branch remains a documentation-only architecture
+proposal. #2/#3 review still owns final IR and diagnostic contracts.
 
 ## Pipeline and responsibilities
 
@@ -49,13 +47,13 @@ UTF-8 configuration
 
 | Stage | Input | Output | Responsibility |
 | --- | --- | --- | --- |
-| Lexer/parser frontend | SourceFile: identity, original decoded text, format | StageResult<LocatedConfig> | Recognize format syntax, retain key/value locations, adapt to shared value tree; no dashboard-meaning checks. |
-| Semantic analyzer | LocatedConfig, ComponentSchema | StageResult<DashboardIR> | Validate structure, required fields, kinds/properties/types and IDs; normalize valid input into IR. |
+| Lexer/parser frontend | SourceFile: identity, original decoded text, format | StageResult<LocatedConfig> | Recognize format syntax, retain value locations, reject malformed structural shapes, adapt to shared value tree; no component-schema checks. |
+| Semantic analyzer | LocatedConfig, ComponentSchema | StageResult<DashboardIR> | Validate required fields, kinds/properties/types and IDs; gate the shared candidate as valid IR. |
 | Dashboard IR | Successful analysis | Typed dashboard nodes with provenance | Represent validated meaning without rereading source text. |
 | Generator | DashboardIR, options | StageResult<GeneratedFile[]> | Deterministically render HTML/CSS and JS where needed; escape content for its output context. No filesystem writes. |
 | Driver | Input path, options | Artifacts or diagnostics and process status | Read source, select frontend, sequence stages, gate generation, render diagnostics and write results. |
 
-Missing fields and unknown kinds must be checked **before** valid IR exists. Rules inspect shared located values or an internal semantic context, never JSON/YAML parser classes. Later checks may use internal candidate IR, but candidate/partial structures are never exposed as validated DashboardIR. Exact registration and scheduling belong to #3. The analyzer owns lowering; neither frontend nor generator owns semantic normalization.
+Missing fields and unknown kinds must be checked **before** valid IR exists. Rules inspect shared located values or an internal semantic context, never JSON/YAML parser classes. Later checks may use internal candidate IR, but candidate/partial structures are never exposed as validated DashboardIR. Exact registration and scheduling belong to #3. For v1, the loader constructs a format-independent candidate and the analyzer certifies it; the generator sees only a validated candidate. Future normalization belongs to the analyzer.
 
 ## Proposed stage interfaces
 
@@ -63,12 +61,12 @@ Pseudotypes describe boundaries; no code or API is implemented.
 
 ```text
 SourceFile = { sourceId, displayPath, text, format }
-SourceSpan = { sourceId, startOffset, endOffset }
+SourceLocation = { sourceId, line, column, excerpt }  // v1 start position
 Diagnostic = { code, severity, message, primarySpan?, relatedLocations[], hint? }
 StageResult<T> = Success { value: T, diagnostics }
                | Failure { diagnostics } // no value
 Frontend.parse(SourceFile) -> StageResult<LocatedConfig>
-Analyzer.analyze(LocatedConfig, ComponentSchema) -> StageResult<DashboardIR>
+Analyzer.analyze(LocatedConfig, ComponentSchema) -> StageResult<DashboardIR>  // v1 returns checked candidate
 Rule.check(AnalysisContext, ComponentSchema) -> Diagnostic[]
 Generator.generate(DashboardIR, GenerationOptions) -> StageResult<GeneratedFile[]>
 GeneratedFile = { relativePath, content }
@@ -76,7 +74,7 @@ GeneratedFile = { relativePath, content }
 
 Success cannot contain error diagnostics. Failure contains an error and no value. The driver stops after failure; warnings/info can accompany success. Unexpected exceptions are implementation failures handled at the driver boundary, not normal invalid-input reporting. #4 owns the final error/exit-code contract.
 
-`LocatedConfig` is a shared **unvalidated** value tree: object, array, string, number, boolean and null. Object nodes retain ordered members with separate key/value spans, so duplicate keys are not lost in a host map. Arrays retain order. Nodes retain spans and logical paths for cross-format diagnostic matching. Number token/precision handling needs agreement in #2/#6 before choosing a host representation.
+`LocatedConfig` is a shared **unvalidated** value tree: object, array, string, number, boolean and null. The v1 loader rejects duplicate keys before constructing the object map. Arrays retain order. A side table maps logical paths to start locations; Python columns count Unicode code points. Key-token spans and end offsets are possible later enhancements, not prerequisites for the working validator. Number precision remains a #2/#6 review item.
 
 JSON initially implements the frontend. A future YAML adapter maps its syntax tree into the same LocatedConfig, preserving original YAML spans. #10 must define scalar typing, non-string keys, aliases, tags and multi-document behavior before implementation. YAML shares schema rules, analyzer and generator; it is not a second compiler.
 
@@ -84,17 +82,22 @@ JSON initially implements the frontend. A future YAML adapter maps its syntax tr
 
 The ComponentSchema is the single table of allowed kinds, required/optional properties, types, defaults and binding requirements. The analyzer reads it; frontends do not duplicate it. A new schema entry alone cannot make a component renderable: schema and generator must agree on supported kinds.
 
-The README's Dashboard, Layout, Component and DataBinding are target concepts. Exact fields, initial component set, layout nesting, theme representation, ID comparison and binding behavior remain for #2/#6. README widget examples are candidates, not a commitment to ship every widget initially. No chart library, data connector or UI framework is selected here.
+The README's Dashboard, Layout, Component and DataBinding are target concepts. PR #15 supplies an initial set and examples for #2/#6 review; final fields, layout nesting, theme representation, ID comparison and binding behavior remain subject to that review. README widget examples are candidates, not a commitment to ship every widget initially. No chart library, data connector or UI framework is selected here.
 
-IR nodes retain origins and property origins remain addressable for later diagnostics. Defaults use an explicit enclosing-node origin rather than invented positions. Proposed representation: typed in-memory IR plus a stable test projection (ADR 0003). Only successful analysis supplies generator input.
+IR nodes retain origins and property origins remain addressable for later diagnostics. Defaults use an explicit enclosing-node origin rather than invented positions. Proposed v1 representation: an in-memory Dashboard carrying a JSON-compatible configuration and a separate path-to-location map, released downstream only after successful analysis (ADR 0003). Only successful analysis supplies generator input.
 
 ## Source locations and diagnostics
 
-Proposed spans use zero-based UTF-16 code-unit offsets into original decoded text and half-open `[startOffset, endOffset)` ranges. This fits the proposed TypeScript runtime; revisit if ADR 0001 changes. Preserve CRLF/LF and escape spelling before indexing. A source registry maps sourceId to text and line starts. Human output uses one-based lines/columns measured in UTF-16 code units. Caret rendering handles tabs/display width separately. An emoji occupies two code units; escaped characters retain spans covering their original source spelling.
+The v1 location contract uses source file, one-based line/column and excerpt;
+columns count Python Unicode code points and tabs count as one column. Loader
+locations point to the start of values; missing-field errors use the containing
+object. Original text is retained for excerpts, including CRLF/LF spelling.
+Optional offset ranges and key-token positions are future proposals requiring
+cross-format fixtures; they are not claimed by PR #15.
 
-Syntax errors point to the token or zero-width EOF span. Unknown properties point to keys, type errors to values, missing fields to containing objects. Duplicate IDs report every occurrence with related locations (#8). IR keeps provenance, with text in the source registry outside semantic identity.
+Syntax errors point to the token or zero-width EOF span. Unknown properties and type errors currently point to value starts; missing fields point to containing objects. Duplicate IDs report every occurrence (#8). A future key-span and related-location enhancement requires parser changes and test coverage.
 
-Source-related diagnostics require primarySpan. I/O errors and internal failures may lack it; never fabricate a line for an unread file. One diagnostic model feeds human and structured output, including excerpts rendered from the registry. #3 owns stable code allocation, severity policy (including unknown properties) and exact goldens. Hints are advice, not automatic edits. Sort by source, offset and code with stable ties; do not collapse distinct findings just because they share a span.
+Source-related diagnostics require a location. I/O errors and internal failures may lack one; never fabricate a line for an unread file. One model feeds human and structured output. PR #15 currently orders semantic findings by registered rule then traversal order, with golden tests locking that behavior. #3 owns the final diagnostic format, severities, source mapping and any ordering change. Do not collapse distinct findings sharing a location.
 
 ## Proposed source tree and dependency direction
 
@@ -141,13 +144,13 @@ Use standard path/filesystem APIs, explicit UTF-8 and LF output. Preserve source
 
 | Decision | Proposal / owner |
 | --- | --- |
-| Runtime/toolchain | TypeScript + supported Node LTS; ADR 0001, not approved. |
-| Parser strategy | Handwritten vs location-preserving library, #6. JSON.parse alone does not retain field spans. |
+| Runtime/toolchain | Adopt Python 3.10+ from tested PR #15; ADR 0001, pending review. |
+| Parser strategy | PR #15 has a source-aware JSON loader; #6 review owns grammar and any future replacement. |
 | JSON/IR vocabulary | Joint #2/#6 contract; initial kinds, property placement, layout, bindings, defaults and numbers remain open. |
-| Syntax vs shape errors | Prefer malformed JSON as syntax, valid JSON with wrong dashboard shape as semantic. #6 originally classifies shape errors as parse-level; this is an explicit proposed amendment. |
+| Syntax vs shape errors | Adopt PR #15 loader-level structural shape errors for v1, subject to #6 review. |
 | Collection / exit / output writes | ADR 0002, #4; recovery limits and publication policy still need agreement. |
 | IR representation | ADR 0003, #2; no public serialized IR compatibility promise. |
 | Diagnostic interface | #3; code allocation, severities and exact outputs remain open. |
-| YAML subset/library | #10 after agreed JSON/IR and a working tested JSON pipeline. |
+| YAML subset/library | PR #15 implements a restricted YAML frontend with optional PyYAML; #10 review owns the final subset. |
 
 This baseline does not complete #2/#3/#4/#6/#14. #1 still requires teammate PR review. A proposal does not become accepted just because a draft exists.

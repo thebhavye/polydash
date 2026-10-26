@@ -8,10 +8,10 @@ JSON and future YAML need one generator. Untyped dictionaries make validity ambi
 
 ## Proposal
 
-Use typed in-memory DashboardIR constructed only after successful analysis. Preserve node/property origins directly or through an IR-owned provenance table. Internal candidate structures are not valid generator inputs.
+Adopt PR #15's initial in-memory `Dashboard` candidate: a JSON-compatible configuration plus a path-to-source-location side table. The loader constructs this candidate, the analyzer checks it, and the driver returns it as validated IR only when no errors remain. A generator must never accept the unvalidated candidate. More strongly typed nodes and property origins are future proposals requiring a reviewed migration.
 
-After #2 defines nodes, provide a deterministic JSON-compatible test projection. Semantic equivalence excludes paths, offsets and format labels, but preserves meaningful order, values and layout. Verify provenance separately. Serialization and numeric behavior require agreement before freezing fixtures.
+PR #15 already compares the JSON-compatible configuration in equivalence tests, excluding only source locations; component/layout order and values remain significant. Keep provenance tests separate. #2 should review this representation and at least three worked examples before public IR serialization or stronger compatibility guarantees are claimed.
 
 ## Consequences
 
-Generator stays format-independent and golden diffs remain reviewable, at a small projection-maintenance cost. Public IR import/export, compatibility guarantees and IR CLI commands are outside this baseline. #2 still owes the complete schema, origin representation and at least three worked input-to-IR examples.
+The existing JSON-compatible tree gives readable cross-format comparisons. Its Python type hints do not by themselves prove semantic validity; the analyzer gate is the contract. Public IR import/export, compatibility guarantees and IR CLI commands remain outside this baseline. #2 still owes review of the schema, origin representation and worked examples.

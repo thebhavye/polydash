@@ -13,12 +13,12 @@ Old dependencies: #2 -> #6 -> #2. Both should depend on #1's baseline and develo
 - Preserve component order. Layout and DataBinding remain explicit target concepts. #2 chooses the smallest useful model; #6 maps it. Do not silently replace bindings with ad-hoc chart fields.
 - Shared unvalidated located values support object/array/string/number/boolean/null, key/value spans and duplicate members. Only successful analysis constructs DashboardIR.
 - One schema defines allowed kinds, typed properties and required fields. No widget list is finalized here.
-- Retain node/property provenance through normalization. Defaulted values use enclosing-node origins. See architecture span conventions.
+- Retain a path-to-start-location side table for values, with missing fields anchored to the containing object. Key-token spans and end offsets are future refinements. See architecture location conventions.
 - Future YAML uses the same analyzer/generator. Equivalent meaning yields equivalent semantic IR, with independently correct source locations.
 
 ## Proposed syntax / semantic amendment
 
-Prefer malformed JSON such as `{"title": }` as syntax errors; valid JSON with wrong dashboard shape such as `{"components": {}}` is semantic. Unknown kinds and missing fields are semantic. This explicitly differs from #6's original parse-level shape instruction. Team agreement must settle the boundary before implementation; a frontend shape-validation alternative remains possible if both specs choose it.
+Adopt PR #15's v1 boundary as the review proposal: malformed JSON such as `{"title": }` is PD0001 syntax; well-formed JSON with a wrong required dashboard shape such as `{"components": {}}` is loader-level PD0002; unknown kinds and missing fields remain semantic. This agrees with #6's original parse-level shape instruction. Reclassification later would need coordinated code, docs and fixture changes.
 
 Propose rejecting duplicate JSON keys rather than silently retaining the last value. #6 owns the category. Duplicate component IDs are separate semantic errors; #2 owns case/whitespace equality.
 
