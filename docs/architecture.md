@@ -10,6 +10,7 @@ Companion proposals:
 
 - [Language/runtime](adr/0001-language-runtime.md)
 - [Error handling](adr/0002-error-handling.md)
+- [Stage integration contract](pipeline-contract.md)
 - [IR representation](adr/0003-ir-representation.md)
 - [Shared IR/JSON contract](contracts/ir-json-shared-contract.md)
 - [Backlog audit](backlog-audit.md)
@@ -54,6 +55,9 @@ UTF-8 configuration
 | Driver | Input path, options | Artifacts or diagnostics and process status | Read source, select frontend, sequence stages, gate generation, render diagnostics and write results. |
 
 Missing fields and unknown kinds must be checked **before** valid IR exists. Rules inspect shared located values or an internal semantic context, never JSON/YAML parser classes. Later checks may use internal candidate IR, but candidate/partial structures are never exposed as validated DashboardIR. Exact registration and scheduling belong to #3. For v1, the loader constructs a format-independent candidate and the analyzer certifies it; the generator sees only a validated candidate. Future normalization belongs to the analyzer.
+
+The [detailed proposed handoff and failure matrix](pipeline-contract.md) extends
+these boundaries for Issue #4; it does not finalize the unresolved runtime or IR.
 
 ## Proposed stage interfaces
 
