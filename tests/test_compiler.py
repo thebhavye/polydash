@@ -57,7 +57,7 @@ class CompilerTests(unittest.TestCase):
                                  'JSON/YAML diagnostics differ at logical paths (diff below)')
                 self.assertEqual(left.ir is None, right.ir is None)
                 if json_path.name.startswith('valid-'):
-                    self.assertEqual([], left.structured())
+                    self.assertFalse(any(d.severity == 'error' for d in left.diagnostics))
                 else:
                     self.assertTrue(left.diagnostics)
 
@@ -198,7 +198,7 @@ class CompilerTests(unittest.TestCase):
                                  (diagnostic.rule_id, diagnostic.location.line, diagnostic.location.column))
 
     def test_yaml_implicit_types_and_multiline_strings(self):
-        text = 'title: |\n  Sales\n  Overview\nlayout: {direction: row}\ncomponents:\n- {id: x, type: metric, value: 0x10}\n- {id: y, type: filter, options: ["on"], multiple: yes}\n'
+        text = 'title: |\n  Sales\n  Overview\nlayout: {direction: row}\ncomponents:\n- {id: x, type: metric, value: 0x10}\n- {id: y, type: filter, title: Region, options: ["on"], multiple: yes}\n'
         result = check(text, 'dashboard.yaml')
         self.assertEqual([], result.structured())
         self.assertEqual('Sales\nOverview\n', result.ir.config['title'])

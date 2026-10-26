@@ -5,7 +5,7 @@ from .model import Diagnostic, pointer
 from .schema import COMPONENTS, DASHBOARD
 
 # Stable registration order is also the diagnostic order.
-RULES = ("PD1001", "PD1002", "PD1003", "PD1004", "PD1005")
+RULES = ("PD1001", "PD1002", "PD1003", "PD1004", "PD1005", "PD2001", "PD2002")
 
 
 def analyze(dashboard, component_schema=None):
@@ -13,8 +13,8 @@ def analyze(dashboard, component_schema=None):
     findings = {rule: [] for rule in RULES}
     ids = defaultdict(list)
 
-    def report(rule, message, path):
-        findings[rule].append(Diagnostic(rule, "error", message, pointer(path), dashboard.location(path)))
+    def report(rule, message, path, severity="error"):
+        findings[rule].append(Diagnostic(rule, severity, message, pointer(path), dashboard.location(path)))
 
     def check(value, spec, path):
         kind = spec.get("type", "object")
@@ -67,6 +67,15 @@ def analyze(dashboard, component_schema=None):
                     report("PD1003", "Missing required field 'id'", here + ("id",))
             else:
                 properties(component, registry[kind], here)
+                title_spec = registry[kind]["properties"].get("title", {})
+                title = component.get("title")
+                # Leave unknown/ill-typed properties to the schema rules.
+                if (kind in ("filter", "chart") and title_spec.get("type") == "string"
+                        and ("title" not in component
+                             or isinstance(title, str) and not title.strip())):
+                    rule = "PD2001" if kind == "filter" else "PD2002"
+                    report(rule, f"{kind.capitalize()} title is missing or blank",
+                           here + ("title",), severity="warning")
             if "children" in component:
                 walk(component["children"], here + ("children",))
 

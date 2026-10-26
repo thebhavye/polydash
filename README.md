@@ -110,8 +110,9 @@ contains proposals only; no new accessibility rules are implemented.
 
 The v1 scope excludes expressions, variables, custom components, includes,
 YAML aliases/anchors and multi-document streams. TOML and a Markdown DSL remain
-possible future front ends. Accessibility and responsive-layout rules remain
-research topics, not implemented features.
+possible future front ends. Missing/blank filter and chart titles produce accessibility authoring warnings
+(PD2001/PD2002); warnings preserve IR and exit status 0. They do not establish
+WCAG conformance. Responsive-layout checks remain research topics.
 
 ## Contributing
 
