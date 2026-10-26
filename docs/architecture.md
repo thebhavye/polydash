@@ -1,26 +1,26 @@
 # PolyDash architecture baseline
 
-Status: **Proposed**, pending teammate review for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an implementation or an approved API.
+Status: **Proposed**, pending team agreement for [Issue #1](https://github.com/thebhavye/polydash/issues/1). This is a target design, not an approved API. The validation adapter described below has since merged; the generator remains unimplemented.
 
 ## Repository baseline
 
-Reviewed 2026-10-26: main at `fce742a` contains only README.md. The checkout also contained an unfinished, untracked architecture draft; this document completes and corrects it. No compiler, runtime manifest, dependency lockfile, tests, CI, contribution guide or PR template exists. Config2UI code is not available here. No language decision is approved. The README defines intended scope.
+Historical starting point, reviewed 2026-10-26: main at `fce742a` contained only README.md. The architecture and Python validation adapter have since merged. A code generator does not yet exist. Config2UI code is not available here. The README defines intended scope.
 
 Companion proposals:
 
 - [Language/runtime](adr/0001-language-runtime.md)
 - [Error handling](adr/0002-error-handling.md)
+- [Stage integration contract](pipeline-contract.md)
 - [IR representation](adr/0003-ir-representation.md)
 - [Shared IR/JSON contract](contracts/ir-json-shared-contract.md)
 - [Backlog audit](backlog-audit.md)
 - [Separate differentiation survey](research/dashboard-generator-survey.md)
 
-## Relationship to the parallel implementation PR
+## Relationship to the merged validation adapter
 
-[PR #15](https://github.com/thebhavye/polydash/pull/15) is an unmerged Python
-validation implementation; it is not part of this branch's repository baseline.
-Its existence does not accept or supersede this proposed design. Before both
-are merged, review these differences explicitly:
+[PR #15](https://github.com/thebhavye/polydash/pull/15) merged the Python
+validation adapter. Its implemented behavior informs this proposed design;
+the remaining public contracts still require review:
 
 | Baseline proposal | PR #15 implementation | Agreement needed |
 | --- | --- | --- |
@@ -30,9 +30,8 @@ are merged, review these differences explicitly:
 | Structural shape failures in loader for v1 | Loader reports shape failures as PD0002 | Record as adopted v1 boundary; future reclassification requires coordinated spec/test change. |
 | Current check CLI 0/1/2; future compiler statuses open | CLI uses 2 for usage/I/O/missing YAML | #4 should preserve this adapter or explicitly plan a versioned CLI change. |
 
-ADR 0001 now proposes adopting Python. PR #15 tests demonstrate the current
-validator behavior, while this branch remains a documentation-only architecture
-proposal. #2/#3 review still owns final IR and diagnostic contracts.
+ADR 0001 proposes adopting the now-merged Python implementation. #2/#3 review
+still owns final IR and diagnostic contracts.
 
 ## Pipeline and responsibilities
 
@@ -54,6 +53,9 @@ UTF-8 configuration
 | Driver | Input path, options | Artifacts or diagnostics and process status | Read source, select frontend, sequence stages, gate generation, render diagnostics and write results. |
 
 Missing fields and unknown kinds must be checked **before** valid IR exists. Rules inspect shared located values or an internal semantic context, never JSON/YAML parser classes. Later checks may use internal candidate IR, but candidate/partial structures are never exposed as validated DashboardIR. Exact registration and scheduling belong to #3. For v1, the loader constructs a format-independent candidate and the analyzer certifies it; the generator sees only a validated candidate. Future normalization belongs to the analyzer.
+
+The [detailed proposed handoff and failure matrix](pipeline-contract.md) extends
+these boundaries for Issue #4; it does not finalize the unresolved runtime or IR.
 
 ## Proposed stage interfaces
 
