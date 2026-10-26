@@ -126,6 +126,21 @@ class HtmlPrototypeTests(unittest.TestCase):
             self.assertEqual(source.read_bytes(), source_bytes)
             self.assertEqual(alias.read_bytes(), source_bytes)
 
+    def test_symlink_loop_reports_error_without_traceback(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "source.json"
+            source.write_bytes((ROOT / "tests/fixtures/pairs/valid-minimal.json").read_bytes())
+            loop = Path(temporary) / "loop.html"
+            try:
+                loop.symlink_to(loop)
+            except OSError as error:
+                self.skipTest(f"Symlinks unavailable: {error}")
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--output", str(loop)], cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertIn("cannot inspect output paths", run.stderr)
+            self.assertNotIn("Traceback", run.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

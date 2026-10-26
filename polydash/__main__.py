@@ -33,7 +33,7 @@ def main():
         for other_name, other_path in destinations[index + 1:]:
             try:
                 same = _same_destination(path, other_path)
-            except OSError as error:
+            except (OSError, RuntimeError) as error:
                 parser.exit(2, f"polydash: cannot inspect output paths: {error}\n")
             if same:
                 parser.exit(2, f"polydash: {name} and {other_name} paths refer to the same file\n")
