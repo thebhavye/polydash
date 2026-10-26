@@ -54,7 +54,7 @@ a design goal, not a demonstrated novelty claim. See the
 
 - Compile dashboard configuration files into deployable HTML/CSS/JS output.
 - Support multiple configuration front-ends (starting with JSON, then YAML) that
-  all lower into the same Dashboard IR.
+  produce a shared located configuration for analysis into the same Dashboard IR.
 - Validate dashboard definitions statically and emit precise, source-aware
   diagnostics instead of vague runtime errors.
 - Run identically on Windows, Linux, and macOS.
@@ -74,8 +74,9 @@ a design goal, not a demonstrated novelty claim. See the
 | **TOML** | *Possible future extension* | Under consideration; not committed. |
 | **Markdown-based DSL** | *Possible future extension* | A defined Markdown syntax is being considered as a lightweight authoring format; not committed. |
 
-All front-ends compile to the same Dashboard IR, so code generation and static
-analysis are format-independent.
+All front-ends produce a shared unvalidated `LocatedConfig`. The format-independent
+analyzer validates it and constructs Dashboard IR only on success; code generation
+consumes that validated IR.
 
 ## 5. Output
 
@@ -107,9 +108,11 @@ never reach the code generator.
 
 ## 7. Planned Dashboard IR
 
-The Dashboard IR is the pivot of the whole compiler: every configuration
-front-end lowers into it, and the code generator (and most validation) works on
-it — never on the source text.
+The Dashboard IR is the pivot of the whole compiler. Each frontend returns
+unvalidated `LocatedConfig` with source locations. The analyzer checks structure
+and meaning, then constructs validated Dashboard IR only if no errors remain.
+The generator consumes that IR without rereading source text. Missing-field and
+unknown-type checks therefore run before valid IR exists.
 
 Planned shape (to be finalized in the IR/component-schema design issue):
 
@@ -156,9 +159,10 @@ polydash check dashboard.yaml                      # analyze only, no generation
 polydash dashboard.json -o dist/                   # flexible input parsing (proposed)
 ```
 
-Behavior goals (proposed): exit non-zero on diagnostics, `--check` for
-validate-only mode, output directory with generated assets. Do not rely on any
-of this until the CLI design issue lands.
+Behavior goals (proposed): error diagnostics cause a nonzero exit; warnings and
+info alone allow success with exit 0. Validate-only mode performs no generation.
+Successful compilation writes generated assets to an output directory. Exact
+options and failure statuses remain proposed in ADR 0002 and Issue #4.
 
 ## 10. Cross-platform goal
 

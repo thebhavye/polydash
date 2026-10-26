@@ -15,6 +15,27 @@ Companion proposals:
 - [Backlog audit](backlog-audit.md)
 - [Separate differentiation survey](research/dashboard-generator-survey.md)
 
+## Relationship to the parallel implementation PR
+
+[PR #15](https://github.com/thebhavye/polydash/pull/15) is an unmerged Python
+validation implementation; it is not part of this branch's repository baseline.
+Its existence does not accept or supersede this proposed design. Before both
+are merged, review these differences explicitly:
+
+| Baseline proposal | PR #15 implementation | Agreement needed |
+| --- | --- | --- |
+| TypeScript/Node candidate | Python 3.10+ package | Ratify or replace ADR 0001; do not maintain competing runtime plans. |
+| UTF-16 offset ranges | Python code-point line/column plus excerpt | Choose provenance units and representation before exposing a stable contract. |
+| Shared unvalidated tree then typed valid IR | Dictionary-backed Dashboard with source-map side table, checked before return | Decide whether this is the initial IR or requires a distinct semantic representation. |
+| Wrong dashboard shapes are semantic | Loader reports shape failures as PD0002 | Settle the explicit #6 boundary amendment. |
+| Separate proposed I/O/internal exit codes | CLI uses 2 for usage/I/O/missing YAML | Finalize #4 before claiming a shared CLI contract. |
+
+No runtime migration or refactor is authorized by this documentation comparison.
+Existing PR #15 tests demonstrate its current behavior, not conformance to every
+proposal in this baseline. Its YAML extra and platform CI do not change this
+branch's implementation status. Resolve these choices in review; do not silently
+merge contradictory specifications.
+
 ## Pipeline and responsibilities
 
 ```text
