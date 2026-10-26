@@ -1,6 +1,6 @@
 # Contributing to PolyDash
 
-Start with [README](README.md) for implemented scope, the [documentation index](docs/README.md) for document authority and pending proposals, and [development setup](docs/dev-setup.md) for installation. This branch includes the implementation proposed in PR #15; it does not imply that PR is merged or architecture decisions are approved.
+Start with [README](README.md) for implemented scope, the [documentation index](docs/README.md) for document authority and pending proposals, and [development setup](docs/dev-setup.md) for installation. The JSON/YAML validator and small static HTML preview are merged; architecture decisions marked proposed still require team agreement.
 
 ## Start a change
 
@@ -25,7 +25,7 @@ Commit small, coherent changes. Prefer messages such as `docs: explain diagnosti
 | --- | --- |
 | Parser / loader | Valid and rejected inputs, exact source positions, syntax/shape boundary and documented unsupported constructs. |
 | Semantic rule / schema | Positive and negative cases, structured rule IDs/locations, multiple findings where recovery matters. |
-| IR / generator, when present | Representation or output comparisons, deterministic results, escaping and invalid-input generation gate where applicable. No generator exists yet. |
+| IR / generator | Representation or output comparisons, deterministic results, escaping and invalid-input generation gate. The current generator produces one static HTML preview. |
 | Multiple frontends | Same-meaning JSON/YAML pairs, equivalent IR/diagnostics, independently correct source spans. |
 | CLI / I/O | Exit status, human and structured diagnostics, no traceback for expected invalid input. |
 | Documentation only | Relative links/anchors, examples and status claims checked; explain why executable tests do not apply. |
@@ -42,7 +42,7 @@ git diff --check
 
 See the setup guide for environment creation and Windows/Linux/macOS commands. The full suite requires the declared YAML extra; a JSON-only install is insufficient for all tests. Existing golden assertions are part of unittest discovery. Regenerate with `python -m tests.update_goldens` only for intentional changes, then review every changed expected diagnostic. Do not replace failing goldens merely to make a test pass.
 
-CI runs the same suite on Windows, Linux and macOS with Python 3.10 and 3.12. Review all matrix results; a local pass does not establish portability. Branch protection is not configured by a workflow file; issue #12 tracks remaining enforcement and main-branch evidence.
+CI runs the same suite on Windows, Linux and macOS with Python 3.10 and 3.12. Review all matrix results; a local pass does not establish portability. Branch protection is not configured by a workflow file; issue #12 tracks required-check enforcement.
 
 ## Open and review a PR
 
