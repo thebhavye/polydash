@@ -22,7 +22,8 @@ Candidate exit codes: 0 success including warnings, 1 invalid input, 2 usage err
 | One semantic error | Located finding, no IR | Neither called | 1 |
 | Multiple independent errors | Applicable findings in stable order, no IR | Neither called | 1 |
 | Warning only | Warning plus valid IR | Both unless check-only | 0 |
-| Analyzer unexpectedly throws | Internal diagnostic, span optional | Neither called | 4 |
+| Analyzer unexpectedly throws | Internal diagnostic, location optional | Neither called | 4 |
+| Generator returns failure | Compilation diagnostic, location optional | Writer not called | 4 |
 | Input unreadable | Path-specific I/O error, no invented span | Neither called | 3 |
 | Output write fails | I/O diagnostic, no success claim | Writes may have begun | 3 |
 
