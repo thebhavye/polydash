@@ -63,7 +63,24 @@ class HtmlPrototypeTests(unittest.TestCase):
         yaml_result = check(base.with_suffix(".yaml").read_text(encoding="utf-8"), "dashboard.yaml")
         self.assertIsNotNone(json_result.ir, json_result.human())
         self.assertIsNotNone(yaml_result.ir, yaml_result.human())
-        self.assertEqual(generate_html(json_result.ir), generate_html(yaml_result.ir))
+        html = generate_html(json_result.ir)
+        self.assertEqual(html, generate_html(yaml_result.ir))
+        self.assertIn('class="card group"', html)
+        self.assertIn("North", html)
+
+    def test_warning_does_not_block_html_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "warning.json"
+            output = Path(temporary) / "preview.html"
+            source.write_text(json.dumps({
+                "title": "Warning demo", "layout": {"direction": "column"},
+                "components": [{"id": "region", "type": "filter", "options": ["North"]}],
+            }), encoding="utf-8")
+            run = subprocess.run([sys.executable, "-m", "polydash", str(source),
+                                  "--output", str(output)], cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            self.assertIn("PD2001", run.stderr)
+            self.assertIn("<select>", output.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
