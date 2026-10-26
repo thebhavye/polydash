@@ -10,5 +10,17 @@
       "column": 15,
       "excerpt": "      \"kind\": \"pie\","
     }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-enum.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
   }
 ]

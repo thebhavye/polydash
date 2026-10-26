@@ -16,7 +16,7 @@ Use [README](../README.md) for current capabilities and [CONTRIBUTING](../CONTRI
 | [Validation and diagnostics](validation-rules.md) | Rule invocation, IDs, severities, human/structured output, golden examples | Implementation contract, pending #3 owner review. |
 | [YAML subset](yaml-support.md) | Optional dependency, scalar resolution and rejected constructs | Implementation contract; YAML is available only with the extra. |
 | [Equivalence tests](equivalence-tests.md) | Equality rules and adding paired fixtures | Test contract proposed for #11. |
-| [Accessibility/responsive spike](research/a11y-responsive-spike.md) | Static versus render-time findings, proposed rules, prior art and limitations | Informative research for #13; no new analyzer rules. |
+| [Accessibility/responsive spike](research/a11y-responsive-spike.md) | Static versus render-time findings, proposed rules, prior art and limitations | Informative research for #13; title warnings implemented separately in #21. |
 | [Issue review](issue-review.md) | Evidence and open acceptance criteria for #1–#14 | Informative dated review, not issue closure. |
 | [Bug template](../.github/ISSUE_TEMPLATE/bug_report.md) | Reproduction and expected/actual diagnostics | Contributor workflow template. |
 | [Enhancement / validation template](../.github/ISSUE_TEMPLATE/enhancement.md) | Scope, dependencies, decisions and test expectations | Contributor workflow template. |

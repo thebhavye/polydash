@@ -22,5 +22,17 @@
       "column": 15,
       "excerpt": "      \"data\": {"
     }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-object-shape.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
   }
 ]

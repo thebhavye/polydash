@@ -93,7 +93,8 @@ The shared analyzer validates that candidate before it is exposed as IR.
 
 The [accessibility/responsive research spike](docs/research/a11y-responsive-spike.md)
 proposes bounded authoring checks and records what requires generated output or
-browser testing. No new accessibility rules are implemented. The
+browser testing. PD2001/PD2002 now implement the bounded title warnings; broader accessibility
+and responsive checks remain proposals. The
 [issue review](docs/issue-review.md) records evidence and remaining criteria for
 all fourteen original issues.
 
@@ -107,8 +108,9 @@ all fourteen original issues.
 
 The v1 scope excludes expressions, variables, custom components, includes,
 YAML aliases/anchors and multi-document streams. TOML and a Markdown DSL remain
-possible future front ends. Accessibility and responsive-layout rules remain
-research topics, not implemented features.
+possible future front ends. Missing/blank filter and chart titles produce accessibility authoring warnings
+(PD2001/PD2002); warnings preserve IR and exit status 0. They do not establish
+WCAG conformance. Responsive-layout checks remain research topics.
 
 ## Contributing
 

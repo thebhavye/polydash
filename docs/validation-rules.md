@@ -3,8 +3,8 @@
 Analysis runs after parsing/shape checking and before IR can reach generation.
 `analyze(Dashboard, component_schema=None) -> list[Diagnostic]` is the rule pass.
 It receives the shared tree, its source map, and the schema registry. Rules add
-findings through `report(rule_id, message, path)`, which resolves source positions.
-The pass never mutates the input and collects recoverable errors.
+findings through `report(rule_id, message, path, severity="error")`, which resolves source positions.
+The pass never mutates the input and collects recoverable errors and warnings.
 
 | ID | Severity | Category | Condition |
 | --- | --- | --- | --- |
@@ -16,6 +16,8 @@ The pass never mutates the input and collects recoverable errors.
 | PD1003 | error | required | Missing required field |
 | PD1004 | error | type | Wrong scalar/list/object type, dimensions, enum or object shape |
 | PD1005 | error | identity | Every occurrence of a colliding component ID |
+| PD2001 | warning | accessibility | Known filter has an omitted or blank title |
+| PD2002 | warning | accessibility | Known chart has an omitted or blank title |
 
 `analyzer.RULES` registers the semantic IDs in the above order; findings are
 ordered by rule and then traversal/insertion order. The generic property walker
@@ -25,7 +27,7 @@ stops traversal of that value, while other fields/components continue.
 Duplicates are checked across the entire dashboard, including children.
 
 Diagnostic fields are exactly `rule_id`, `severity`, `message`, `path`,
-`location`. Severity values are error/warning/info (v1 emits errors only).
+`location`. Severity values are error/warning/info (warnings preserve valid IR and exit status 0).
 `path` is an RFC 6901 JSON pointer, root `""`. Missing fields use the absent
 field's logical path and their parent's source span. Messages are concise,
 stable text, without embedded file names or formatting.
@@ -78,3 +80,17 @@ review `git diff -- tests/fixtures/golden` before committing. Regeneration is
 explicit and never runs during tests. Golden changes need explanation in the
 PR; do not regenerate to hide a regression. To add a case, add a `.json` file,
 regenerate, inspect the diagnostics manually, and run the full suite.
+
+## Title authoring warnings (#17, #18)
+
+PD2001/PD2002 share the schema-aware walker, including nested children. Missing
+or whitespace-only titles warn at the logical `/title` path; missing titles
+anchor the containing component and blank titles anchor their value. Non-string
+titles receive the existing PD1004 error only. Unknown kinds are not inspected.
+Whitespace checking does not modify the stored title. All findings are collected.
+
+These are authoring-context warnings, not WCAG conformance checks. A future
+generator should render filter titles as visible, programmatically associated
+input labels and chart titles as visible headings associated with their chart.
+The concrete HTML mapping needs generator review; no generator exists yet.
+Chart titles do not replace useful data summaries, tables or text alternatives.

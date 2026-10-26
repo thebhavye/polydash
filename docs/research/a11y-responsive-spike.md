@@ -1,7 +1,8 @@
 # Accessibility and responsive-layout analysis spike
 
-Informative research for #13, reviewed 2026-10-26. No analyzer code or new schema
-property is introduced here. Proposed IDs are unregistered and subject to triage.
+Informative research for #13, reviewed 2026-10-26. The study originally proposed
+all three checks below. PR #21 implements PD2001/PD2002 as warning-only rules;
+PD2101 remains deferred and unregistered. No layout schema extension is introduced.
 
 ## What the current description can tell us
 
@@ -40,16 +41,16 @@ measurement, runtime data or every browser's layout.
 
 ## Rule proposals and first fixture pairs
 
-Each rule would receive Dashboard + schema context, collect Diagnostic findings,
-and use `Dashboard.location(path)`. Suggested severity is warning so existing
+The title rules receive Dashboard + schema context, collect Diagnostic findings,
+and use `Dashboard.location(path)`. Their severity is warning so existing
 valid configs do not suddenly fail. Missing titles anchor the component object
 while retaining the absent `/title` path; blank titles anchor the title value.
 Only inspect nodes with a known type and a well-typed title (when present).
 Schema/type errors remain the existing rules' responsibility.
 
-### PD2001: Filter title is missing or blank
+### PD2001: Filter title is missing or blank (implemented in #21)
 
-Proposed warning, category accessibility. A filter accepts input and should have
+Warning, category accessibility (implemented by the separate title-rule change). A filter accepts input and should have
 an author-supplied visible label. Test `title.strip()` only for blankness; do not
 normalize the stored text. No title fallback from an internal ID is assumed.
 
@@ -66,15 +67,15 @@ Conforming mini-component:
 ```
 
 Embed each in `{"title":"Sales","layout":{"direction":"column"},"components":[COMPONENT]}`.
-Expected future finding: PD2001, warning, `/components/0/title` for the first;
+Expected finding: PD2001, warning, `/components/0/title` for the first;
 none for the second. Add a missing-title case with a component-object location.
-Both examples are valid under the **current** schema and currently have no
-warnings; this is a proposal, not existing behavior. Effort: about one day for
-rule, JSON/YAML fixtures and diagnostics documentation, after approval.
+Both examples are valid under the current schema; the first now emits a warning
+without removing IR or changing success status. Original estimate: about one day
+for the rule, JSON/YAML fixtures and diagnostics documentation.
 
-### PD2002: Chart title is missing or blank
+### PD2002: Chart title is missing or blank (implemented in #21)
 
-Proposed warning, category accessibility. A chart should have a human-readable
+Warning, category accessibility (implemented by the separate title-rule change). A chart should have a human-readable
 title for context. This does not establish an adequate chart text alternative.
 
 Invalid mini-component:
@@ -89,10 +90,10 @@ Conforming mini-component:
 {"id":"trend","type":"chart","title":"Revenue by month","data":{"source":"sales.csv"},"series":["revenue"]}
 ```
 
-Use the same Dashboard wrapper. Expected future finding: PD2002 warning at
+Use the same Dashboard wrapper. Expected finding: PD2002 warning at
 `/components/0/title`, anchored to the chart object for the first; none for the
-second. Both remain accepted by the present validator. Effort: about one day,
-sharing blank-title handling and format-equivalence tests with PD2001.
+second. Both remain accepted by the validator; only the first warns. Original estimate:
+about one day, sharing blank-title handling and format-equivalence tests with PD2001.
 
 ### PD2101: Declared fixed-width row exceeds container (defer)
 
@@ -143,7 +144,8 @@ library later follows normal dependency approval.
 
 Proposal issues [#17](https://github.com/thebhavye/polydash/issues/17) (PD2001) and
 [#18](https://github.com/thebhavye/polydash/issues/18) (PD2002) carry the example pairs above;
-confirm warning severity and generator label/title mapping before implementation.
+PR #21 implements them as warnings. Generator label/title mapping still needs
+review when generation is implemented.
 Recommend accepting those bounded authoring checks. Keep PD2101 deferred until
 the layout schema has width/wrap semantics. Drop blanket row/column-count and
 "all charts have alt text" rules: the current IR cannot support those claims.

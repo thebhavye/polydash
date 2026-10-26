@@ -45,8 +45,9 @@ in PR #19; it does not rewrite Bhavye's proposal.
 The new [#17](https://github.com/thebhavye/polydash/issues/17) and
 [#18](https://github.com/thebhavye/polydash/issues/18) are the two proposal issues
 requested by the #13 spike. They have fixture pairs and estimates, and await
-maintainer accept/reject decisions. They are not implemented rules or automatic
-extensions of the original fourteen issues.
+maintainer accept/reject decisions. At this review snapshot they were not implemented rules or automatic extensions
+of the original fourteen issues. Subsequent PR #21 implements the two title
+warnings in a separate reviewed change; the broader responsive proposal remains deferred.
 
 ## Joint decisions to make once
 

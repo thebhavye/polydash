@@ -10,5 +10,17 @@
       "column": 9,
       "excerpt": "        1"
     }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/title",
+    "location": {
+      "file": "golden/wrong-array-item.json",
+      "line": 7,
+      "column": 5,
+      "excerpt": "    {"
+    }
   }
 ]

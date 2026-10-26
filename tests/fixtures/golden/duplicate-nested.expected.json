@@ -22,5 +22,17 @@
       "column": 13,
       "excerpt": "      \"id\": \"sales\","
     }
+  },
+  {
+    "rule_id": "PD2002",
+    "severity": "warning",
+    "message": "Chart title is missing or blank",
+    "path": "/components/0/children/1/title",
+    "location": {
+      "file": "golden/duplicate-nested.json",
+      "line": 21,
+      "column": 9,
+      "excerpt": "        {"
+    }
   }
 ]
