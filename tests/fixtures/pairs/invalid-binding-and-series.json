@@ -1,0 +1,17 @@
+{
+  "title": "Bad binding",
+  "layout": {
+    "direction": "row"
+  },
+  "components": [
+    {
+      "id": "trend",
+      "type": "chart",
+      "title": "Trend",
+      "data": {
+        "url": "sales.csv"
+      },
+      "series": 3
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+components:
+- unit: USD
+  value: 42
+  title: Total
+  type: metric
+  id: total
+theme: dark
+layout:
+  direction: column
+title: Reordered
