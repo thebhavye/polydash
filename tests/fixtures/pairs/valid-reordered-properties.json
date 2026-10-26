@@ -1,0 +1,16 @@
+{
+  "title": "Reordered",
+  "layout": {
+    "direction": "column"
+  },
+  "theme": "dark",
+  "components": [
+    {
+      "id": "total",
+      "type": "metric",
+      "title": "Total",
+      "value": 42,
+      "unit": "USD"
+    }
+  ]
+}

@@ -28,6 +28,8 @@ Run `python -m unittest discover -v`. Paired fixtures in `tests/fixtures/pairs`:
 | valid-all-properties | Every current property type, including numeric matrix |
 | invalid-multiple | Required, kind, property, type and duplicate diagnostics |
 | invalid-duplicate-nested | Duplicate IDs across nesting boundaries |
+| valid-reordered-properties | Object-key order and formatting are no-op distinctions |
+| invalid-binding-and-series | Nested binding object shape and list type errors together |
 
 To add a pair, create `<name>.json` and `<name>.yaml`, with prefix `valid-` or
 `invalid-`, describing the same tree. Avoid YAML implicit-typing surprises and
@@ -35,3 +37,10 @@ unsupported anchors. The runner discovers pairs automatically; include both
 files and run the full suite. For a new schema property extend all-properties.
 Review canonical tree and diagnostic diffs in the PR. This is the initial
 proposed equivalence contract; architecture-owner review remains a merge step.
+
+The runner checks that JSON and YAML fixture stem sets match before comparing
+any pairs. A YAML-only fixture is an error, not silently ignored. Its failure
+message lists JSON-only and YAML-only names. It also enforces the minimum valid
+and invalid pair counts. Reordered keys are exercised by an explicit valid pair;
+array/component order and diagnostic order remain significant. Binding-object
+and list-type errors are compared together in an additional invalid pair.

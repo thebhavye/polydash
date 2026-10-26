@@ -46,6 +46,14 @@ class CompilerTests(unittest.TestCase):
                     self.assertTrue(diagnostic.location.excerpt)
 
     def test_equivalence(self):
+        pairs = FIXTURES / 'pairs'
+        json_names = {path.stem for path in pairs.glob('*.json')}
+        yaml_names = {path.stem for path in pairs.glob('*.yaml')}
+        self.assertEqual(json_names, yaml_names,
+                         f"Unpaired fixtures: JSON-only={sorted(json_names - yaml_names)}, "
+                         f"YAML-only={sorted(yaml_names - json_names)}")
+        self.assertGreaterEqual(sum(name.startswith('valid-') for name in json_names), 3)
+        self.assertGreaterEqual(sum(name.startswith('invalid-') for name in json_names), 2)
         for json_path in sorted((FIXTURES / 'pairs').glob('*.json')):
             with self.subTest(pair=json_path.stem):
                 yaml_path = json_path.with_suffix('.yaml')
