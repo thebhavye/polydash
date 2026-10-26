@@ -20,7 +20,7 @@ The pass never mutates the input and collects recoverable errors and warnings.
 | PD2002 | warning | accessibility | Known chart has an omitted or blank title |
 
 `analyzer.RULES` registers the semantic IDs in the above order; findings are
-ordered by rule and then traversal/insertion order. The generic property walker
+ordered by rule and then the rule-specific order detailed below. The generic property walker
 reads requirements from `schema.py`; new schema properties require no rule
 changes. Unknown fields do not receive type checks. An outer type mismatch
 stops traversal of that value, while other fields/components continue.
@@ -120,10 +120,13 @@ fixtures and cross-format cases. A property type belongs in schema data, not
 in a special-case rule branch. Any extraction to separate callable rules must
 preserve this input/output contract and diagnostic order.
 
-Ordering is registered ID order followed by traversal order within that ID;
+Ordering is registered rule ID order followed by that rule's emission order;
 there is no final source-position sort. For example, a PD1003 at line 20 comes
-before a PD1004 at line 3. Dict fields and array elements follow source insertion
-order. Duplicate occurrences remain separate even if their source locations
+before a PD1004 at line 3. Property checks visit fields in source insertion
+order and arrays/components in traversal order. Missing required fields follow
+the schema's required-field list within each object. PD1005 groups collisions
+by ID in first-seen ID order, then emits each group's occurrences in traversal
+order: IDs [a,b,b,a] report component positions [0,3,1,2], not [0,1,2,3]. Duplicate occurrences remain separate even if their source locations
 coincide; missing fields can share a parent location. Do not deduplicate them.
 
 Warnings alone retain IR and allow generation. Errors suppress downstream IR;
