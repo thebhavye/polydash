@@ -17,9 +17,11 @@ Implemented in this increment (issues #6–#11):
 - Optional YAML/YML front end: install the declared `yaml` extra (PyYAML).
   See [YAML support](docs/yaml-support.md) for the subset and installation.
 
-HTML/CSS/JS code generation, live data access and a full compile CLI are
-still planned. The CI workflow targets Windows, Linux and macOS. The check
-adapter below validates input only. The new schema/IR
+An initial static HTML preview can render validated metric, table, filter, and
+group components. Charts show a labeled placeholder because data source strings
+are not fetched. Live data access, chart plotting, JavaScript interactions, and
+a full compile CLI are still planned. The CI workflow targets Windows, Linux
+and macOS. The new schema/IR
 and diagnostic contracts are initial baselines for architecture-owner review;
 the prerequisite architecture issues #2/#3 have not been marked approved.
 The [proposed architecture baseline](docs/architecture.md),
@@ -37,9 +39,16 @@ needs no third-party libraries and no install step:
 ```sh
 python -m polydash tests/fixtures/pairs/valid-minimal.json
 python -m polydash tests/fixtures/golden/multiple.json --diagnostics-json diagnostics.json
+python -m polydash examples/demo.json --output dashboard.html
 ```
 
-Human diagnostics go to stderr; the option also writes a JSON artifact.
+Human diagnostics go to stderr; `--diagnostics-json` also writes a JSON artifact.
+`--output` writes one self-contained HTML file only when validation succeeds.
+Open `dashboard.html` in a browser to show the prototype. The demo's table rows
+are illustrative values stored directly in the configuration; the filter is a
+native control and does not change other components.
+
+![Static HTML prototype preview](docs/images/prototype-preview.png)
 Exit status is 0 for success, 1 for invalid input, and 2 for usage/I/O errors or
 an unavailable YAML library. Invalid input never exposes downstream IR.
 
