@@ -39,11 +39,14 @@ arranged, and the compiler produces the frontend code.
 
 The hard part is that hand-written configuration files are error-prone: missing
 required fields, unknown component types, duplicate IDs, wrong value types, and
-structurally inconsistent layouts. These problems usually surface at runtime, in
-the browser, far from the mistake's source. PolyDash's differentiator is a
-**compiler-focused static-analysis engine** that validates dashboard definitions
-and reports problems **before code generation**, with diagnostics tied back to
-the source configuration.
+structurally inconsistent layouts. Without validation, these problems can surface in the browser, far from the
+mistake's source. PolyDash's intended focus is a
+**compiler-focused static-analysis engine** that
+validates dashboard definitions and reports problems **before code generation**,
+with diagnostics tied back to the source configuration. Declarative generation,
+schema validation, and source-aware validation have existing precedents; this is
+a design goal, not a demonstrated novelty claim. See the
+[comparison survey](docs/research/dashboard-generator-survey.md).
 
 ## 3. Goals and intended users
 
@@ -51,7 +54,7 @@ the source configuration.
 
 - Compile dashboard configuration files into deployable HTML/CSS/JS output.
 - Support multiple configuration front-ends (starting with JSON, then YAML) that
-  all lower into the same Dashboard IR.
+  produce a shared located configuration for analysis into the same Dashboard IR.
 - Validate dashboard definitions statically and emit precise, source-aware
   diagnostics instead of vague runtime errors.
 - Run identically on Windows, Linux, and macOS.
@@ -71,8 +74,9 @@ the source configuration.
 | **TOML** | *Possible future extension* | Under consideration; not committed. |
 | **Markdown-based DSL** | *Possible future extension* | A defined Markdown syntax is being considered as a lightweight authoring format; not committed. |
 
-All front-ends compile to the same Dashboard IR, so code generation and static
-analysis are format-independent.
+All front-ends produce a shared unvalidated `LocatedConfig`. The format-independent
+analyzer validates it and constructs Dashboard IR only on success; code generation
+consumes that validated IR.
 
 ## 5. Output
 
@@ -82,6 +86,13 @@ Generated, static dashboard artifacts:
 - **CSS** — styling and arrangement.
 - **JavaScript** — emitted only where required (for example, interactive
   components that need runtime behavior).
+
+The [proposed architecture baseline](docs/architecture.md),
+[decision records](docs/adr/0001-language-runtime.md), and
+[shared JSON/IR contract](docs/contracts/ir-json-shared-contract.md) describe
+stage boundaries and open decisions. They are documentation proposals, not
+implemented features or team-approved specifications. The
+[backlog audit](docs/backlog-audit.md) records dependency and scope gaps.
 
 ## 6. Compiler pipeline and the role of each stage
 
@@ -97,9 +108,11 @@ never reach the code generator.
 
 ## 7. Planned Dashboard IR
 
-The Dashboard IR is the pivot of the whole compiler: every configuration
-front-end lowers into it, and the code generator (and most validation) works on
-it — never on the source text.
+The Dashboard IR is the pivot of the whole compiler. Each frontend returns
+unvalidated `LocatedConfig` with source locations. The analyzer checks structure
+and meaning, then constructs validated Dashboard IR only if no errors remain.
+The generator consumes that IR without rereading source text. Missing-field and
+unknown-type checks therefore run before valid IR exists.
 
 Planned shape (to be finalized in the IR/component-schema design issue):
 
@@ -146,9 +159,10 @@ polydash check dashboard.yaml                      # analyze only, no generation
 polydash dashboard.json -o dist/                   # flexible input parsing (proposed)
 ```
 
-Behavior goals (proposed): exit non-zero on diagnostics, `--check` for
-validate-only mode, output directory with generated assets. Do not rely on any
-of this until the CLI design issue lands.
+Behavior goals (proposed): error diagnostics cause a nonzero exit; warnings and
+info alone allow success with exit 0. Validate-only mode performs no generation.
+Successful compilation writes generated assets to an output directory. Exact
+options and failure statuses remain proposed in ADR 0002 and Issue #4.
 
 ## 10. Cross-platform goal
 
@@ -215,7 +229,8 @@ CLI, input format support, or tests exist yet.
 - YAML front-end; possible TOML and Markdown-syntax front-ends.
 - Cross-platform CI and a first release.
 
-**Known limitations of the vision:** the differentiator (static analysis before
-generation) must be evidenced against existing dashboard generators before being
-claimed as distinctive — see the research issue in the tracker. The CLI shown
-above is aspirational only.
+**Known limitations of the vision:** the [research draft](docs/research/dashboard-generator-survey.md)
+finds prior art for declarative generation, schema validation, and source-aware
+pre-render validation. PolyDash has no demonstrated novelty or diagnostic-quality
+advantage yet. Issue #14 still requires teammate review. The CLI shown above is
+aspirational only.
