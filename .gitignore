@@ -3,3 +3,11 @@ __pycache__/
 *.egg-info/
 .venv/
 build/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
